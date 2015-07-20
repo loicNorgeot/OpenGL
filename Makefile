@@ -2,7 +2,7 @@ EXEPATH=executables/
 SRCPATH=sources/
 BLDPATH=build/
 
-VPATH=$(SRCPATH)
+
 
 SRCS=shader.cpp
 SRC=$(addprefix $(SRCPATH), SRCS)
@@ -18,12 +18,12 @@ EXEC=$(EXEPATH)main
 main : $(OBJ) $(BLDPATH)$(MAINFILE).o
 	$(CXX) -o $(EXEPATH)$@ $^ $(CXXFLAGS)
 
-build/shader.o: sources/shader.cpp sources/shader.h
-	$(CXX) -o build/shader.o -c $< $(CXXFLAGS)
+#build/shader.o: sources/shader.cpp sources/shader.h
+#	$(CXX) -o build/shader.o -c $< $(CXXFLAGS)
 
-
+VPATH=$(SRCPATH)
 $(BLDPATH)%.o: %.cpp %.h
-	$(CXX) -c $< $(CXXFLAGS)
+	$(CXX) -c $< $(CXXFLAGS) -o $@
 
 
 $(BLDPATH)main.o : $(SRCPATH)$(MAINFILE).cpp $(HEA)
