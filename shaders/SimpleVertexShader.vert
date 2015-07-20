@@ -1,0 +1,9 @@
+#version 130
+
+//layout(location = 0) Non compatible avec glsl>1.3
+in vec3 vertexPosition_modelspace;
+
+void main(){
+     gl_Position.xyz = vertexPosition_modelspace; 
+     gl_Position.w = 1.0; 
+ }
