@@ -87,7 +87,8 @@ int main(){
   //////////////////////////////////////////////////////////////////////////////////////////////////////////
   //BOUCLE PRINCIPALE
   while( glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS && 
-	 glfwWindowShouldClose(window) == 0 ){//Tant que ni esc ni fermeture
+	 !glfwWindowShouldClose(window)){//Tant que ni esc ni fermeture
+    glfwWaitEvents();
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);//Nettoyage
     glUseProgram(programID);
@@ -113,6 +114,7 @@ int main(){
     glUseProgram(0);
     glfwSwapBuffers(window);
   }
+  glfwDestroyWindow(window);
   return 1;
 }
 
