@@ -2,9 +2,7 @@ EXEPATH=executables/
 SRCPATH=sources/
 BLDPATH=build/
 
-
-
-SRCS=shader.cpp
+SRCS=shader.cpp controls.cpp context.cpp
 SRC=$(addprefix $(SRCPATH), SRCS)
 HEA=$($(SRC):.cpp=.h)
 OBJ=$(addprefix $(BLDPATH), $(SRCS:.cpp=.o))
