@@ -50,6 +50,7 @@ int CONTEXT::init(int sizeX, int sizeY, string windowName, int major, int minor)
   glEnable(GL_DEPTH_TEST); 
   glEnable(GL_CULL_FACE);
   glDepthFunc(GL_LESS);
+  glPolygonMode(GL_FRONT, GL_FILL);
   
   return 1;
 }
