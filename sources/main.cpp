@@ -15,11 +15,15 @@
 #include "shader.h"
 #include "controls.h"
 #include "context.h"
+#include "mesh.h"
 
 using namespace std;
 using namespace glm;
 
 int main(){
+  //Test
+  mesh_read();
+  
   //Initialisation
   CONTEXT context;
   context.init(1024, 768, "TESTS OPENGL", 3, 3);
