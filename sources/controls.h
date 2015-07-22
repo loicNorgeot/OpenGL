@@ -24,9 +24,12 @@ static float vAngle     = 0.0f;
 static float speed      = 8.0f;
 static float mouseSpeed = 0.2f; 
 
+static int wireframe    = 0;
+
 
 void scroll_callback(GLFWwindow* window,double x,double y);
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 class CONTROLS{
 public:
