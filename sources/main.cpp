@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <cstdlib>
+#include <vector>
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -11,7 +12,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "properties.h"
 #include "shader.h"
 #include "controls.h"
 #include "context.h"
@@ -22,8 +22,19 @@ using namespace glm;
 
 int main(){
   //Test
-  mesh_read();
-  
+  std::vector<float> g_vertex;
+  mesh_read("/home/loic/Blender/MESH/FauduetSkin.o1.mesh", g_vertex);
+  float g_vertex_buffer_data[g_vertex.size()];
+  float g_color_buffer_data[g_vertex.size()];
+  for(int i = 0 ; i < g_vertex.size() ; i++){
+    g_vertex_buffer_data[i] = g_vertex[i];
+    g_color_buffer_data[i] = 1.0f;
+  }
+
+  //DEBUG
+  cout << g_vertex_buffer_data[10000] << endl;
+  cout << g_color_buffer_data[10000] << endl;
+
   //Initialisation
   CONTEXT context;
   context.init(1024, 768, "TESTS OPENGL", 3, 3);

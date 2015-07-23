@@ -1,6 +1,5 @@
 #version 130
 
-//layout(location = 0) Non compatible avec glsl>1.3
 in vec3 vertexPosition_modelspace;
 in vec3 vertexColor;
 out vec3 fragmentColor; 

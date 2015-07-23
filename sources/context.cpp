@@ -22,7 +22,7 @@ int CONTEXT::init( int sizeX,
 		   int minor){
 
   //GLFW Initialization
-  //glfwWindowHint( GLFW_SAMPLES,               4);
+  glfwWindowHint( GLFW_SAMPLES,               4);
   glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, major);
   glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, minor); 
   glfwWindowHint( GLFW_OPENGL_PROFILE,        GLFW_OPENGL_CORE_PROFILE); 
@@ -57,7 +57,7 @@ int CONTEXT::init( int sizeX,
   glEnable(          GL_CULL_FACE);
   glDepthFunc(       GL_LESS);
   glPolygonMode(     GL_FRONT, GL_FILL);
-  //glEnable(GL_MULTISAMPLE);  
+  glEnable(          GL_MULTISAMPLE);  
   
   return 1;
 }
@@ -97,7 +97,7 @@ void CONTEXT::loop(){
   GL_attributes(      colorbuffer , 1, "vertexColor");
  
   //Dessin
-  glDrawArrays(       GL_TRIANGLES, 0, nbVertices); //Du sommet 0, pour 3 sommets
+  glDrawArrays(       CGL_RENDER, 0, nbVertices); //Du sommet 0, pour 3 sommets
  
   //Fin et nettoyage
   glDisableVertexAttribArray( 0);

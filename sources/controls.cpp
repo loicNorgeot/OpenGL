@@ -38,8 +38,18 @@ void key_callback( GLFWwindow* window,
 		   int scancode,
 		   int action,
 		   int mods){
-  //cout << key << "\t " << scancode << "\t" << action << "\t" << mods << endl;
   
+  //Touche P pour nuage de points
+  if ( scancode == 33 && action == GLFW_PRESS){
+    if(CGL_RENDER==GL_TRIANGLES){
+      glPolygonMode(     GL_FRONT, GL_POINT);
+      CGL_RENDER = GL_POINTS;
+    }
+    else
+      CGL_RENDER = GL_TRIANGLES;
+    cout << "Render: " << CGL_RENDER << endl;
+  }
+
   //Touche Z pour mode wireframe
   if ( scancode == 25 && action == GLFW_PRESS){
     wireframe++;
@@ -134,15 +144,17 @@ void set_view( GLFWwindow* window){
 
 void set_render_type(GLFWwindow* window){
   if( wireframe==0){
+    glEnable(      GL_DEPTH_TEST);
     glPolygonMode( GL_FRONT, GL_FILL);
     glEnable(      GL_CULL_FACE);
   }
   if( wireframe==1){
-    glPolygonMode( GL_FRONT_AND_BACK, GL_LINE);
+    glPolygonMode( GL_FRONT, GL_LINE);
     glEnable(      GL_CULL_FACE);
+    glEnable(      GL_DEPTH_TEST);
   }
   if( wireframe==2){
-    glPolygonMode( GL_FRONT, GL_LINE);
+    glPolygonMode( GL_FRONT_AND_BACK, GL_LINE);
     glDisable(     GL_DEPTH_TEST);
     glDisable(     GL_CULL_FACE);
   }

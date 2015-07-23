@@ -14,24 +14,25 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-static float FOV        = 45.0;
-static glm::vec3 cam    = glm::vec3( 4.0, 1.5, 3.0);
-static glm::vec3 look   = glm::vec3( 0.0, 0.0, 0.0);
-static glm::vec3 up     = glm::vec3( 0.0, 1.0, 0.0);
-static float hAngle     = 3.14f;
-static float vAngle     = 0.0f;
-static float speed      = 8.0f;
-static float mouseSpeed = 0.2f; 
+static float FOV         = 45.0;
+static glm::vec3 cam     = glm::vec3( 4.0, 1.5, 3.0);
+static glm::vec3 look    = glm::vec3( 0.0, 0.0, 0.0);
+static glm::vec3 up      = glm::vec3( 0.0, 1.0, 0.0);
+static float hAngle      = 3.14f;
+static float vAngle      = 0.0f;
+static float speed       = 8.0f;
+static float mouseSpeed  = 0.2f; 
 
-static bool FLYINGMODE  = false;
-static bool ENTERFLYMODE= false;
-static bool FIRSTENTER  = true;
-static int  wireframe   = 0;
+static bool FLYINGMODE   = false;
+static bool ENTERFLYMODE = false;
+static bool FIRSTENTER   = true;
+static int  wireframe    = 0;
+static GLenum CGL_RENDER = GL_TRIANGLES;
 
-static float deltaTime  = 0;
+static float deltaTime   = 0;
 
-static int centerX      = 1024/2;
-static int centerY      = 768/2;
+static int centerX       = 1024/2;
+static int centerY       = 768/2;
 
 void scroll_callback(       GLFWwindow* window, double x,   double y);
 void mouse_button_callback( GLFWwindow* window, int button, int action,   int mods);

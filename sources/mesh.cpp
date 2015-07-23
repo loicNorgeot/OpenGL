@@ -24,7 +24,8 @@ static int lineNumber = 0;
 
 
 //Lecture d'un fichier .mesh
-int mesh_read( string filename){
+int mesh_read( string filename, 
+	       std::vector<float> &g_vertex){
   
   //Create the attributes
   attribute attributes[] = {attribute(),//Vertices
@@ -74,6 +75,7 @@ int mesh_read( string filename){
     for (int i = 0 ; i < 4 ; i++){
       if(readNum[i]){
 	sizes[i] = atoi(token[0]);
+	attributes[i].size = sizes[i];
 	readNum[i]=false;
 	readElt[i]=true;
       }
@@ -91,7 +93,86 @@ int mesh_read( string filename){
 
     //Update line number
     lineNumber++;
-
   }
-  cout << attributes[0].val[20797][0] << endl;
+
+  //POSTPROCESSING VERTICES
+  attributes[0].get_bounding_box();
+  attributes[0].get_scaling_parameters();
+  attributes[0].move_and_scale();
+
+  //POSTPROCESSING FACES
+  attributes[1].switch_indices();
+  
+  /*
+  //Remplissage de g_vertex par les vertices
+  for(int i = 0 ; i < attributes[0].size ; i++){
+    for(int j = 0 ; j < 3 ; j++){
+      g_vertex.push_back(attributes[0].val[i][j]);
+    }
+    }*/
+
+  //Remplissage de g_vertex par les faces (sans indexation)
+  cout << attributes[1].size << endl;
+  for(int i = 0 ; i < attributes[1].size ; i++){
+    for(int j = 0 ; j < 3 ; j++){
+      g_vertex.push_back( attributes[0].val[ int(attributes[1].val[i][j]) ][0] ); //Le x
+      g_vertex.push_back( attributes[0].val[ int(attributes[1].val[i][j]) ][1] ); //Le y
+      g_vertex.push_back( attributes[0].val[ int(attributes[1].val[i][j]) ][2] ); //Le z
+    }
+  }
+
+  /*
+  cout << "minZ, maxZ = " << attributes[0].mins[2] << " " << attributes[0].maxs[2] << "\n"
+       << "mvZ        = " << attributes[0].mv[2] << "\n" 
+       << "sF         = " << attributes[0].scaleFactor << "\n" << endl;*/
+  return 1;
+}
+
+//int get_bounding_box(int &mx, int &Mx, int &my, int &My, int &mz, int &Mz){
+int attribute::get_bounding_box(){
+  
+  for(int i = 0 ; i < size ; i++){
+    for(int j = 0 ; j < 3 ; j++){
+      if (i==0){
+	mins[j]=val[i][j];
+	maxs[j]=val[i][j];
+      }
+      if(val[i][j] < mins[j])
+	mins[j] = val[i][j];
+      if(val[i][0] > maxs[j])
+	maxs[j] = val[i][j];
+    }
+  }
+  return 1;
+}
+
+int attribute::get_scaling_parameters(){
+  //Scale parameters
+  float s[3];
+  for (int j = 0 ; j < 3 ; j++)
+    s[j] = maxs[j] - mins[j];
+  scaleFactor = 1.0f / max(s[0], max(s[1], s[2])) ;
+  //Translation parameters
+  for(int j = 0 ; j < 3 ; j++){
+    mv[j] = - (maxs[j] - mins[j]) / 2.0f;
+  }  
+  return 1;
+}
+
+int attribute::move_and_scale(){
+  for(int i = 0 ; i < size ; i++){
+    for(int j = 0 ; j < 3 ; j++){
+      val[i][j] += mv[j];
+      val[i][j] *= scaleFactor;
+    }
+  }
+  return 1;
+}
+
+int attribute::switch_indices(){
+  for(int i = 0 ; i < size ; i++){
+    for(int j = 0 ; j < 3 ; j++){
+      val[i][j]-=1.0f;
+    }
+  }
 }
