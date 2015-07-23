@@ -10,6 +10,7 @@ public:
   int size;                               //Number of elements
   float mins[3];
   float maxs[3];
+  float gravity_center[3] = {0,0,0};
   
   float mv[3];         //Move
   float scaleFactor;   //Scale
@@ -21,6 +22,7 @@ public:
 
   //Pour les faces
   int switch_indices();
+  int get_gravity_center();
 };
 
 int mesh_read(std::string filename, std::vector<float> &g_vertex);

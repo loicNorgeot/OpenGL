@@ -95,24 +95,20 @@ int mesh_read( string filename,
     lineNumber++;
   }
 
+  
+
   //POSTPROCESSING VERTICES
   attributes[0].get_bounding_box();
+  attributes[0].get_gravity_center();
+
   attributes[0].get_scaling_parameters();
   attributes[0].move_and_scale();
+  
 
   //POSTPROCESSING FACES
   attributes[1].switch_indices();
-  
-  /*
-  //Remplissage de g_vertex par les vertices
-  for(int i = 0 ; i < attributes[0].size ; i++){
-    for(int j = 0 ; j < 3 ; j++){
-      g_vertex.push_back(attributes[0].val[i][j]);
-    }
-    }*/
 
   //Remplissage de g_vertex par les faces (sans indexation)
-  cout << attributes[1].size << endl;
   for(int i = 0 ; i < attributes[1].size ; i++){
     for(int j = 0 ; j < 3 ; j++){
       g_vertex.push_back( attributes[0].val[ int(attributes[1].val[i][j]) ][0] ); //Le x
@@ -121,10 +117,12 @@ int mesh_read( string filename,
     }
   }
 
-  /*
-  cout << "minZ, maxZ = " << attributes[0].mins[2] << " " << attributes[0].maxs[2] << "\n"
+  
+  cout << "minX, maxX = " << attributes[0].mins[0] << " " << attributes[0].maxs[0] << "\n"
+       << "minY, maxY = " << attributes[0].mins[1] << " " << attributes[0].maxs[1] << "\n"
+       << "minZ, maxZ = " << attributes[0].mins[2] << " " << attributes[0].maxs[2] << "\n"
        << "mvZ        = " << attributes[0].mv[2] << "\n" 
-       << "sF         = " << attributes[0].scaleFactor << "\n" << endl;*/
+       << "sF         = " << attributes[0].scaleFactor << "\n" << endl;
   return 1;
 }
 
@@ -146,6 +144,18 @@ int attribute::get_bounding_box(){
   return 1;
 }
 
+int attribute::get_gravity_center(){
+  for(int i = 0 ; i < size; i++){
+    for(int j = 0 ; j < 3 ; j++){
+      gravity_center[j]+=val[i][j];
+    }
+  }
+  for(int j = 0 ; j < 3 ; j++){
+    gravity_center[j]/=size;
+    cout << "grav " << j << " = " << gravity_center[j] << endl;
+  }
+}
+
 int attribute::get_scaling_parameters(){
   //Scale parameters
   float s[3];
@@ -154,7 +164,7 @@ int attribute::get_scaling_parameters(){
   scaleFactor = 1.0f / max(s[0], max(s[1], s[2])) ;
   //Translation parameters
   for(int j = 0 ; j < 3 ; j++){
-    mv[j] = - (maxs[j] - mins[j]) / 2.0f;
+    mv[j] = - gravity_center[j];
   }  
   return 1;
 }
@@ -176,3 +186,5 @@ int attribute::switch_indices(){
     }
   }
 }
+
+

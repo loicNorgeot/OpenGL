@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <cstdlib>
+#include <cmath>
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -20,7 +21,9 @@ void mouse_button_callback( GLFWwindow* window,
 			    int action,
 			    int mods){
   if ( button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
-    cout << "toto" << endl;
+    speed = 0.05f;
+  if ( button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE)
+    speed = 0.5f;
 }
 void scroll_callback( GLFWwindow* window,
 		      double x,
@@ -108,8 +111,14 @@ void set_view( GLFWwindow* window){
       centerX      = xpos;
       centerY      = ypos;
       ENTERFLYMODE = false;
-      //hAngle       = cam;
-      //vAngle       = cam;
+      if(FIRSTENTER){
+	FIRSTENTER=false;
+	float norm = pow( pow(cam[0],2) +
+			  pow(cam[1],2) +
+			  pow(cam[2],2) ,0.5);
+	vAngle      = -3.14 / 4.0f;
+	hAngle      = 5 * 3.14 / 4.0f;
+      }
     }
     
     //Ajustements du FlyingMode

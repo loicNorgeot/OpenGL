@@ -10,7 +10,7 @@ OBJ=$(addprefix $(BLDPATH), $(SRCS:.cpp=.o))
 MAINFILE=main
 CXX=g++
 LIBS=-I /usr/include/  -I /usr/local/include/
-CXXFLAGS=$(LIBS) -lGLEW -lglfw3 -lX11 -lXxf86vm -pthread -lXrandr -lXinerama -lXi -lXcursor -lm -lGL
+CXXFLAGS=$(LIBS) -lGLEW -lglfw3 -lX11 -lXxf86vm -pthread -lXrandr -lXinerama -lXi -lXcursor -lm -lGL -std=c++11
 EXEC=$(EXEPATH)main
 
 main : $(OBJ) $(BLDPATH)$(MAINFILE).o

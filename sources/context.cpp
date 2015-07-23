@@ -52,7 +52,7 @@ int CONTEXT::init( int sizeX,
   //VAO, color and depth
   glGenVertexArrays( 1,        &VertexArrayID); 
   glBindVertexArray( VertexArrayID);
-  glClearColor(      0.1f,     0.1f, 0.15f, 0.0f);
+  glClearColor(      0.1f,     0.1f, 0.1f, 0.0f);
   glEnable(          GL_DEPTH_TEST); 
   glEnable(          GL_CULL_FACE);
   glDepthFunc(       GL_LESS);
