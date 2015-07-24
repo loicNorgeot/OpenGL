@@ -12,6 +12,7 @@ public:
   GLuint MatrixID;
   GLuint vertexbuffer;
   GLuint colorbuffer;
+  GLuint normalbuffer;
   int nbVertices;
   glm::mat4 MVP;
   CONTROLS controls;

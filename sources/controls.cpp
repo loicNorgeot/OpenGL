@@ -17,6 +17,8 @@
 int    render_mode    = 0;
 bool   wireframe      = false;
 GLenum CGL_RENDER     = GL_POINTS;
+int    width          = 1024;
+int    height         = 768;
 
 using namespace std;
 
@@ -33,11 +35,15 @@ void scroll_callback( GLFWwindow* window,
 		      double x,
 		      double y){
   if( !FLYINGMODE){
+    float D = 0.05f;
+    cam -= cam * D * float(y);  
+    /*
     FOV += y * (-2);
     if( FOV <= 1.0f)
       FOV = 1.0f;
     if( FOV >= 80.0f)
-      FOV = 80.0f;
+    FOV = 80.0f;
+    */
   }
 }
 void key_callback( GLFWwindow* window,
@@ -126,7 +132,7 @@ void set_view( GLFWwindow* window){
 			  pow(cam[1],2) +
 			  pow(cam[2],2) ,0.5);
 	vAngle      = 0.0f;//-3.14 / 4.0f;
-	hAngle      = 3.14f;//5 * 3.14 / 4.0f;
+	hAngle      = 3.14159f;//5 * 3.14 / 4.0f;
       }
     }
     
@@ -177,6 +183,10 @@ void set_render_type(GLFWwindow* window){
     glPolygonMode( GL_FRONT_AND_BACK, GL_LINE);
     glLineWidth(2.0f);
   }
+  if (render_mode == 2)
+    CGL_RENDER = GL_POINTS;
+  else
+    CGL_RENDER = GL_TRIANGLES;
 }
 
 
@@ -201,20 +211,13 @@ void CONTROLS::listen( GLFWwindow* window){
 }
 
 void screenshot(){
-  int width=1024;
-  int height=768;
-  // Make the BYTE array, factor of 3 because it's RBG.
   BYTE* pixels = new BYTE[ 3 * width * height];
-
   glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, pixels);
-
   // Convert to FreeImage format & save to file
   FIBITMAP* image = FreeImage_ConvertFromRawBits(pixels, width, height, 3 * width, 24, 0x0000FF, 0xFF0000, 0x00FF00, false);
   FreeImage_Save(FIF_BMP, image, "test.bmp", 0);
-
   // Free resources
   FreeImage_Unload(image);
   delete [] pixels;
-
   cout << "Screenshot done!" << endl;
 }

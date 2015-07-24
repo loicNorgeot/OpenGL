@@ -25,7 +25,8 @@ static int lineNumber = 0;
 
 //Lecture d'un fichier .mesh
 int mesh_read( string filename, 
-	       std::vector<float> &g_vertex){
+	       std::vector<float> &g_vertex,
+	       std::vector<float> &g_normal){
   
   //Create the attributes
   attribute attributes[] = {attribute(),//Vertices
@@ -85,7 +86,6 @@ int mesh_read( string filename,
     for (int tok = 0; tok < n; tok++){
       for (int i = 0 ; i < 4 ; i++){
 	if(token[tok]==NAMES[i]){
-	  //cout << buf << endl;
 	  readNum[i]=true;
 	}
       }
@@ -112,18 +112,36 @@ int mesh_read( string filename,
   //A changer ici pour modifier les orientations des modèles
   for(int i = 0 ; i < attributes[1].size ; i++){
     for(int j = 0 ; j < 3 ; j++){
-      g_vertex.push_back( attributes[0].val[ int(attributes[1].val[i][j]) ][0] ); //Le x
-      g_vertex.push_back( attributes[0].val[ int(attributes[1].val[i][j]) ][2] ); //Le y
-      g_vertex.push_back( attributes[0].val[ int(attributes[1].val[i][j]) ][1] ); //Le z
+      int indVert = int(attributes[1].val[i][j]);
+      g_vertex.push_back( attributes[0].val[ indVert ][0] ); //Le x
+      g_vertex.push_back( attributes[0].val[ indVert ][2] ); //Le y
+      g_vertex.push_back( attributes[0].val[ indVert ][1] ); //Le z
     }
   }
 
+  //Remplissage de g_normal par les faces (sans indexation)
+  //A changer ici pour modifier les orientations des modèles
+  for(int i = 0 ; i < 3 * attributes[1].size ; i++)
+    g_normal.push_back(0.0f);
+
+  cout << attributes[3].size << " " << attributes[0].size << endl;
+  cout << attributes[3].val[0][1] << endl;
+
+  //Cas avec VBO et tout t'as vu
+  for(int i = 0 ; i < attributes[3].size ; i++){
+    int indNorm = int(attributes[3].val[i][0]-1.0f);
+    int indVert = int(attributes[3].val[i][1]-1.0f);
+    g_normal[ indNorm + 0 ] = attributes[2].val[ indVert ][0] ; 
+    g_normal[ indNorm + 1 ] = attributes[2].val[ indVert ][2] ; //normale en ce vertex, selon x
+    g_normal[ indNorm + 2 ] = attributes[2].val[ indVert ][1] ; //normale en ce vertex, selon x
+  }
   
   cout << "minX, maxX = " << attributes[0].mins[0] << " " << attributes[0].maxs[0] << "\n"
        << "minY, maxY = " << attributes[0].mins[1] << " " << attributes[0].maxs[1] << "\n"
        << "minZ, maxZ = " << attributes[0].mins[2] << " " << attributes[0].maxs[2] << "\n"
        << "mvZ        = " << attributes[0].mv[2] << "\n" 
        << "sF         = " << attributes[0].scaleFactor << "\n" << endl;
+
   return 1;
 }
 

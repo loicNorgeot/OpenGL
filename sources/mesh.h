@@ -25,7 +25,7 @@ public:
   int get_gravity_center();
 };
 
-int mesh_read(std::string filename, std::vector<float> &g_vertex);
+int mesh_read(std::string filename, std::vector<float> &g_vertex, std::vector<float> &g_normal);
 
 
 #endif

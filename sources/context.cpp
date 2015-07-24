@@ -94,6 +94,7 @@ void CONTEXT::loop(){
   //Linkage des attributs
   GL_attributes(      vertexbuffer, 0, "vertexPosition_modelspace");
   GL_attributes(      colorbuffer , 1, "vertexColor");
+  GL_attributes(      normalbuffer, 2, "normals");
 
 
   int index = glGetUniformLocation(programID, "change");
@@ -102,22 +103,22 @@ void CONTEXT::loop(){
   if(render_mode==0){
     glUniform1f(index, 0.0f);
     wireframe=false;
-    glDrawArrays(GL_TRIANGLES, 0, nbVertices);
+    glDrawArrays(CGL_RENDER, 0, nbVertices);
     glUniform1f(index, 1.0f);
     glDepthFunc(   GL_LESS);
     glFrontFace(GL_CW);
     glPolygonMode( GL_FRONT_AND_BACK, GL_LINE);
     glLineWidth(2.0f);
-    glDrawArrays(GL_TRIANGLES, 0, nbVertices); 
+    glDrawArrays(CGL_RENDER, 0, nbVertices); 
   }
-  else if (render_mode==1){
+  else if (render_mode==1 || render_mode==2){
     wireframe=true;
     glLineWidth(1.0f);
     glUniform1f(index, 2.0f);
-    glDrawArrays(GL_TRIANGLES, 0, nbVertices); 
+    glDrawArrays(CGL_RENDER, 0, nbVertices); 
   }
-  else if (render_mode == 2){
-    glDrawArrays(GL_POINTS, 0, nbVertices); 
+  else if (render_mode == 3){
+    glDrawArrays(CGL_RENDER, 0, nbVertices); 
   }
   
 
