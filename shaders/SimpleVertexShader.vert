@@ -13,8 +13,8 @@ void main(){
   if(change==0.0f)
     fragmentColor=vec3(0.00f, 0.00f, 0.00f);
   else if(change==1.0f)
-    fragmentColor=vec3(0.6f, 0.6f, 0.6f);
-  else if(change==2.0f)
     fragmentColor=vec3(0.8f, 0.8f, 0.8f);
+  else if(change==2.0f)
+    fragmentColor=vec3(0.6f, 0.6f, 0.6f);
   //fragmentColor = vertexColor;
 }

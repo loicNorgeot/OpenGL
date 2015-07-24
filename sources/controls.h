@@ -14,6 +14,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include <FreeImage.h>
+
 //Variables globales à initialiser dans uniquement un fichier!!!
 #include "globals.h"
 
@@ -42,6 +44,7 @@ void key_callback(          GLFWwindow* window, int key,    int scancode, int ac
 void GUI(             GLFWwindow* window);
 void set_render_type( GLFWwindow* window);
 void set_view(        GLFWwindow* window);
+void screenshot();
 
 class CONTROLS{
 public:

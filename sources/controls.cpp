@@ -74,6 +74,10 @@ void key_callback( GLFWwindow* window,
     FLYINGMODE = !FLYINGMODE;
     cout << "Fly Mode: " << FLYINGMODE << endl;
   }
+
+  //Touche S pour screenshot
+  if ( key == GLFW_KEY_S && action == GLFW_PRESS)
+    screenshot();
 }
 
 void GUI( GLFWwindow* window){
@@ -194,4 +198,23 @@ void CONTROLS::listen( GLFWwindow* window){
   glfwSetScrollCallback(      window, scroll_callback);
   glfwSetMouseButtonCallback( window, mouse_button_callback);
   glfwSetKeyCallback(         window, key_callback);
+}
+
+void screenshot(){
+  int width=1024;
+  int height=768;
+  // Make the BYTE array, factor of 3 because it's RBG.
+  BYTE* pixels = new BYTE[ 3 * width * height];
+
+  glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+
+  // Convert to FreeImage format & save to file
+  FIBITMAP* image = FreeImage_ConvertFromRawBits(pixels, width, height, 3 * width, 24, 0x0000FF, 0xFF0000, 0x00FF00, false);
+  FreeImage_Save(FIF_BMP, image, "test.bmp", 0);
+
+  // Free resources
+  FreeImage_Unload(image);
+  delete [] pixels;
+
+  cout << "Screenshot done!" << endl;
 }

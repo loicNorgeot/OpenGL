@@ -97,7 +97,6 @@ void CONTEXT::loop(){
 
 
   int index = glGetUniformLocation(programID, "change");
-  cout << render_mode << " ";
 
   //1
   if(render_mode==0){
