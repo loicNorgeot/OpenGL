@@ -20,7 +20,6 @@ int CONTEXT::init( int sizeX,
 		   string windowName,
 		   int major,
 		   int minor){
-
   //GLFW Initialization
   glfwWindowHint( GLFW_SAMPLES,               4);
   glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, major);
@@ -52,7 +51,7 @@ int CONTEXT::init( int sizeX,
   //VAO, color and depth
   glGenVertexArrays( 1,        &VertexArrayID); 
   glBindVertexArray( VertexArrayID);
-  glClearColor(      0.1f,     0.1f, 0.1f, 0.0f);
+  glClearColor(      0.0f,     0.0f, 0.0f, 0.0f);
   glEnable(          GL_DEPTH_TEST); 
   glEnable(          GL_CULL_FACE);
   glDepthFunc(       GL_LESS);
@@ -95,10 +94,34 @@ void CONTEXT::loop(){
   //Linkage des attributs
   GL_attributes(      vertexbuffer, 0, "vertexPosition_modelspace");
   GL_attributes(      colorbuffer , 1, "vertexColor");
- 
-  //Dessin
-  glDrawArrays(       CGL_RENDER, 0, nbVertices); //Du sommet 0, pour 3 sommets
- 
+
+
+  int index = glGetUniformLocation(programID, "change");
+  cout << render_mode << " ";
+
+  //1
+  if(render_mode==0){
+    glUniform1f(index, 0.0f);
+    wireframe=false;
+    glDrawArrays(GL_TRIANGLES, 0, nbVertices);
+    glUniform1f(index, 1.0f);
+    glDepthFunc(   GL_LESS);
+    glFrontFace(GL_CW);
+    glPolygonMode( GL_FRONT_AND_BACK, GL_LINE);
+    glLineWidth(2.0f);
+    glDrawArrays(GL_TRIANGLES, 0, nbVertices); 
+  }
+  else if (render_mode==1){
+    wireframe=true;
+    glLineWidth(1.0f);
+    glUniform1f(index, 2.0f);
+    glDrawArrays(GL_TRIANGLES, 0, nbVertices); 
+  }
+  else if (render_mode == 2){
+    glDrawArrays(GL_POINTS, 0, nbVertices); 
+  }
+  
+
   //Fin et nettoyage
   glDisableVertexAttribArray( 0);
   glUseProgram( 0);

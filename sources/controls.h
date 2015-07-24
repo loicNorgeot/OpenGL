@@ -14,8 +14,11 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+//Variables globales à initialiser dans uniquement un fichier!!!
+#include "globals.h"
+
 static float FOV         = 45.0;
-static glm::vec3 cam     = glm::vec3( 1.0, 1.0, 1.0);
+static glm::vec3 cam     = glm::vec3( 0, 0, 2.0);//glm::vec3( 1.0, 1.0, 1.0);
 static glm::vec3 look    = glm::vec3( 0.0, 0.0, 0.0);
 static glm::vec3 up      = glm::vec3( 0.0, 1.0, 0.0);
 static float hAngle      = 3.14159f;
@@ -26,8 +29,6 @@ static float mouseSpeed  = 0.2f;
 static bool FLYINGMODE   = false;
 static bool ENTERFLYMODE = false;
 static bool FIRSTENTER   = true;
-static int  wireframe    = 0;
-static GLenum CGL_RENDER = GL_TRIANGLES;
 
 static float deltaTime   = 0;
 

@@ -14,6 +14,10 @@
 
 #include "controls.h"
 
+int    render_mode    = 0;
+bool   wireframe      = false;
+GLenum CGL_RENDER     = GL_POINTS;
+
 using namespace std;
 
 void mouse_button_callback( GLFWwindow* window,
@@ -52,13 +56,14 @@ void key_callback( GLFWwindow* window,
       CGL_RENDER = GL_TRIANGLES;
     cout << "Render: " << CGL_RENDER << endl;
   }
+  
 
   //Touche Z pour mode wireframe
   if ( scancode == 25 && action == GLFW_PRESS){
-    wireframe++;
-    if( wireframe == 3)
-      wireframe = 0;
-    cout << "Wireframe mode: " << wireframe << endl;
+    render_mode++;
+    if(render_mode==3)
+      render_mode=0;
+    cout << "Render mode: " << render_mode << endl;
   }
 
   //Touche F pour FLY mode
@@ -116,8 +121,8 @@ void set_view( GLFWwindow* window){
 	float norm = pow( pow(cam[0],2) +
 			  pow(cam[1],2) +
 			  pow(cam[2],2) ,0.5);
-	vAngle      = -3.14 / 4.0f;
-	hAngle      = 5 * 3.14 / 4.0f;
+	vAngle      = 0.0f;//-3.14 / 4.0f;
+	hAngle      = 3.14f;//5 * 3.14 / 4.0f;
       }
     }
     
@@ -152,20 +157,21 @@ void set_view( GLFWwindow* window){
 }
 
 void set_render_type(GLFWwindow* window){
-  if( wireframe==0){
+  if( !wireframe){
     glEnable(      GL_DEPTH_TEST);
+    glDepthFunc(   GL_LESS);
     glPolygonMode( GL_FRONT, GL_FILL);
     glEnable(      GL_CULL_FACE);
+    //glDisable(     GL_POLYGON_OFFSET_LINE);
   }
-  if( wireframe==1){
-    glPolygonMode( GL_FRONT, GL_LINE);
-    glEnable(      GL_CULL_FACE);
-    glEnable(      GL_DEPTH_TEST);
-  }
-  if( wireframe==2){
+  if( wireframe){
     glPolygonMode( GL_FRONT_AND_BACK, GL_LINE);
     glDisable(     GL_DEPTH_TEST);
     glDisable(     GL_CULL_FACE);
+    glDepthFunc(   GL_LESS);
+    glFrontFace(GL_CW);
+    glPolygonMode( GL_FRONT_AND_BACK, GL_LINE);
+    glLineWidth(2.0f);
   }
 }
 

@@ -109,11 +109,12 @@ int mesh_read( string filename,
   attributes[1].switch_indices();
 
   //Remplissage de g_vertex par les faces (sans indexation)
+  //A changer ici pour modifier les orientations des modèles
   for(int i = 0 ; i < attributes[1].size ; i++){
     for(int j = 0 ; j < 3 ; j++){
       g_vertex.push_back( attributes[0].val[ int(attributes[1].val[i][j]) ][0] ); //Le x
-      g_vertex.push_back( attributes[0].val[ int(attributes[1].val[i][j]) ][1] ); //Le y
-      g_vertex.push_back( attributes[0].val[ int(attributes[1].val[i][j]) ][2] ); //Le z
+      g_vertex.push_back( attributes[0].val[ int(attributes[1].val[i][j]) ][2] ); //Le y
+      g_vertex.push_back( attributes[0].val[ int(attributes[1].val[i][j]) ][1] ); //Le z
     }
   }
 
