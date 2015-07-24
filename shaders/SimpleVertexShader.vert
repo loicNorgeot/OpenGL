@@ -13,11 +13,11 @@ void main(){
   gl_Position = MVP * vec4(vertexPosition_modelspace,1);
   
   if(change==0.0f)
-    fragmentColor=vec3(0.00f, 0.00f, 0.00f);
+    fragmentColor=vec3(0.08f, 0.08f, 0.08f);
   else if(change==1.0f)
-    fragmentColor=vec3(0.8f, 0.8f, 0.8f);
+    fragmentColor=vec3(1.0f, 0.55f, 0.0f);
   else if(change==2.0f)
-    fragmentColor=vec3(0.6f, 0.6f, 0.6f);
+    fragmentColor=vec3(1.0f, 1.0f, 1.0f);
   
   //fragmentColor = normals;
   //fragmentColor = vertexColor;

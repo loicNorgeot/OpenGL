@@ -45,6 +45,10 @@ void scroll_callback( GLFWwindow* window,
     FOV = 80.0f;
     */
   }
+  if(FLYINGMODE){
+    float D = 0.01f;
+    cam += glm::vec3(0, D*y, 0);
+  }
 }
 void key_callback( GLFWwindow* window,
 		   int key,
