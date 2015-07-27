@@ -51,7 +51,7 @@ int CONTEXT::init( int sizeX,
   //VAO, color and depth
   glGenVertexArrays( 1,        &VertexArrayID); 
   glBindVertexArray( VertexArrayID);
-  glClearColor(      0.0f,     0.0f, 0.0f, 0.0f);
+  glClearColor(      0.0f,     0.00f, 0.0f, 0.0f);
   glEnable(          GL_DEPTH_TEST); 
   glEnable(          GL_CULL_FACE);
   glDepthFunc(       GL_LESS);
@@ -62,12 +62,22 @@ int CONTEXT::init( int sizeX,
 }
 
 //Send data to OpenGL
-GLuint CONTEXT::GL_buffer_data( const float* p_data,
-				int mem_size){
+GLuint CONTEXT::GL_array_buffer( const float* p_data,
+				int dimension){
   GLuint buffer;
+  int mem = dimension * sizeof(float) * nbVertices;
   glGenBuffers( 1,               &buffer); 
   glBindBuffer( GL_ARRAY_BUFFER, buffer); 
-  glBufferData( GL_ARRAY_BUFFER, mem_size, p_data, GL_STATIC_DRAW);
+  glBufferData( GL_ARRAY_BUFFER, mem, p_data, GL_STATIC_DRAW);
+  return buffer;
+}
+GLuint CONTEXT::GL_index_buffer( const int* indices,
+				 int number){
+  GLuint buffer;
+  int mem = number * sizeof(int);
+  glGenBuffers( 1,               &buffer); 
+  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, buffer); 
+  glBufferData( GL_ELEMENT_ARRAY_BUFFER, mem, indices, GL_STATIC_DRAW);
   return buffer;
 }
 
@@ -96,34 +106,36 @@ void CONTEXT::loop(){
   GL_attributes(      colorbuffer , 1, "vertexColor");
   GL_attributes(      normalbuffer, 2, "normals");
 
-
   int index = glGetUniformLocation(programID, "change");
 
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesbuffer);
   //1
   if(render_mode==0){
     glUniform1f(index, 0.0f);
     wireframe=false;
-    glDrawArrays(CGL_RENDER, 0, nbVertices);
+    glDrawElements( CGL_RENDER, nbIndices, GL_UNSIGNED_INT, (void*)0);
     glUniform1f(index, 1.0f);
     glDepthFunc(   GL_LESS);
     glFrontFace(GL_CW);
     glPolygonMode( GL_FRONT_AND_BACK, GL_LINE);
     glLineWidth(2.0f);
-    glDrawArrays(CGL_RENDER, 0, nbVertices); 
+    glDrawElements( CGL_RENDER, nbIndices, GL_UNSIGNED_INT, (void*)0);
   }
   else if (render_mode==1 || render_mode==2){
     wireframe=true;
     glLineWidth(1.0f);
     glUniform1f(index, 2.0f);
-    glDrawArrays(CGL_RENDER, 0, nbVertices); 
+    glDrawElements( CGL_RENDER, nbIndices, GL_UNSIGNED_INT, (void*)0);
   }
   else if (render_mode == 3){
-    glDrawArrays(CGL_RENDER, 0, nbVertices); 
+    glDrawElements( CGL_RENDER, nbIndices, GL_UNSIGNED_INT, (void*)0);
   }
   
 
   //Fin et nettoyage
   glDisableVertexAttribArray( 0);
-  glUseProgram( 0);
-  glfwSwapBuffers( window);
+  glDisableVertexAttribArray( 1);
+  glDisableVertexAttribArray( 2);
+  glUseProgram(               0);
+  glfwSwapBuffers(            window);
 }

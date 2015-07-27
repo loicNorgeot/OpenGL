@@ -15,17 +15,13 @@ public:
   float mv[3];         //Move
   float scaleFactor;   //Scale
 
-  //Pour les vertices
   int get_bounding_box();
   int get_scaling_parameters();
   int move_and_scale();
-
-  //Pour les faces
-  int switch_indices();
   int get_gravity_center();
 };
 
-int mesh_read(std::string filename, std::vector<float> &g_vertex, std::vector<float> &g_normal);
+int mesh_read(std::string filename, std::vector<float> &g_vertex, std::vector<float> &g_normal, std::vector<int> &g_indices);
 
 
 #endif

@@ -24,55 +24,63 @@ int main(){
 
   //Lecture
   std::vector<float> g_vertex, g_normal;
-  mesh_read("/home/loic/Blender/MESH/FauduetBone.o1.mesh", g_vertex, g_normal);
+  std::vector<int>   g_indices;
+  mesh_read("/home/loic/Blender/MESH/FauduetBone.o1.mesh", g_vertex, g_normal, g_indices);
 
-  
-//Création des buffers d'attributs
-  float color[3] = {0.8f, 0.6f, 0.0f};
-  float *g_vertex_buffer_data = new float[g_vertex.size()];
-  float *g_color_buffer_data = new float[g_vertex.size()];
-  float *g_normal_buffer_data = new float[g_normal.size()];
-
-  cout << "diff de taille = " << g_vertex.size() - g_normal.size() << endl;
-  cout << g_vertex.size() << endl;
-  cout << g_normal.size() << endl;
-
-  for(int i = 0 ; i < g_vertex.size() ; i+=3){
-    for(int j = 0 ; j < 3; j++){
-      g_vertex_buffer_data[i+j] = g_vertex[i+j];
-      g_color_buffer_data[i+j]  = color[j];
-    }
-  }
-  for(int i = 0 ; i < g_normal.size() ; i++)
-    g_normal_buffer_data[i] = g_normal[i];  
-
-  cout << "gnormal = " << g_normal_buffer_data[0] << " " << g_normal_buffer_data[1] << " " << g_normal_buffer_data[2] << endl;
-  cout << "gcolor = " << g_color_buffer_data[0] << " " << g_color_buffer_data[1] << " " << g_color_buffer_data[2] << endl;
-
+  //Tableaux a transférer
+  //Couleurs
+  float colors[3] = {0.8f, 0.6f, 0.0f};
+  float *colors_data = new float[g_vertex.size()];
+  for(int i = 0 ; i < g_vertex.size() / 3 ; i+=3)
+    for(int j = 0 ; j < 3 ; j++)
+      colors_data[i+j] = colors[j];
+  //Position et normales
+  float *vertex_data = &g_vertex[0];
+  float *normal_data = &g_normal[0];
+  //Indices
+  int   *indice_data = &g_indices[0];
   
   //Initialisation
   CONTEXT context;
   context.init(width, height, "TESTS OPENGL", 3, 3);
 
   //Identifiants
-  context.programID = LoadShaders("shaders/SimpleVertexShader.vert",
-				  "shaders/SimpleFragmentShader.frag");
-  context.MatrixID = glGetUniformLocation(context.programID, "MVP"); 
-  context.nbVertices = g_vertex.size()/3;
+  context.programID     = LoadShaders("shaders/SimpleVertexShader.vert",
+				      "shaders/SimpleFragmentShader.frag");
+  context.MatrixID      = glGetUniformLocation(context.programID, "MVP"); 
+  context.nbVertices    = g_vertex.size()/3;
+  context.nbIndices     = g_indices.size();
 
-  context.vertexbuffer = context.GL_buffer_data(g_vertex_buffer_data, 3 * context.nbVertices * sizeof(*g_vertex_buffer_data));
-  context.colorbuffer  = context.GL_buffer_data(g_color_buffer_data , 3 * context.nbVertices * sizeof(*g_color_buffer_data) );
-  context.normalbuffer = context.GL_buffer_data(g_normal_buffer_data, 3 * context.nbVertices * sizeof(*g_normal_buffer_data));
-
+  //Buffers de données
+  context.vertexbuffer  = context.GL_array_buffer( vertex_data, 3);
+  context.colorbuffer   = context.GL_array_buffer( colors_data, 3);
+  context.normalbuffer  = context.GL_array_buffer( normal_data, 3);
+  context.indicesbuffer = context.GL_index_buffer( indice_data, context.nbIndices);
+  
   //Boucle principale
   while( glfwGetKey(context.window, GLFW_KEY_ESCAPE ) != GLFW_PRESS && !glfwWindowShouldClose(context.window)){
     context.loop();
   }
 
   //Nettoyage
-  delete[] g_vertex_buffer_data;
-  delete[] g_color_buffer_data;
-  delete[] g_normal_buffer_data;
   glfwDestroyWindow(context.window);
+  delete[] colors_data;
+  delete[] vertex_data;
+  delete[] normal_data;
+  delete[] indice_data;
   return 1;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

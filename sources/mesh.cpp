@@ -26,7 +26,8 @@ static int lineNumber = 0;
 //Lecture d'un fichier .mesh
 int mesh_read( string filename, 
 	       std::vector<float> &g_vertex,
-	       std::vector<float> &g_normal){
+	       std::vector<float> &g_normal,
+	       std::vector<int>   &g_indices){
   
   //Create the attributes
   attribute attributes[] = {attribute(),//Vertices
@@ -95,53 +96,39 @@ int mesh_read( string filename,
     lineNumber++;
   }
 
-  
-
   //POSTPROCESSING VERTICES
   attributes[0].get_bounding_box();
   attributes[0].get_gravity_center();
-
   attributes[0].get_scaling_parameters();
   attributes[0].move_and_scale();
-  
 
-  //POSTPROCESSING FACES
-  attributes[1].switch_indices();
+  ////////////////////////////////////////////////////////////////////////////////////////
+  //REMPLISSAGE AVEC INDEXATION
 
-  //Remplissage de g_vertex par les faces (sans indexation)
-  //A changer ici pour modifier les orientations des modèles
-  for(int i = 0 ; i < attributes[1].size ; i++){
-    for(int j = 0 ; j < 3 ; j++){
-      int indVert = int(attributes[1].val[i][j]);
-      g_vertex.push_back( attributes[0].val[ indVert ][0] ); //Le x
-      g_vertex.push_back( attributes[0].val[ indVert ][2] ); //Le y
-      g_vertex.push_back( attributes[0].val[ indVert ][1] ); //Le z
-    }
+  //Remplissage de g_vertex
+  for(int i = 0 ; i < attributes[0].size ; i++){
+      g_vertex.push_back( attributes[0].val[ i ][0] ); //Le x
+      g_vertex.push_back( attributes[0].val[ i ][2] ); //Le y
+      g_vertex.push_back( attributes[0].val[ i ][1] ); //Le z
   }
 
-  //Remplissage de g_normal par les faces (sans indexation)
-  //A changer ici pour modifier les orientations des modèles
-  for(int i = 0 ; i < 3 * attributes[1].size ; i++)
-    g_normal.push_back(0.0f);
-
-  cout << attributes[3].size << " " << attributes[0].size << endl;
-  cout << attributes[3].val[0][1] << endl;
-
-  //Cas avec VBO et tout t'as vu
+  //Remplissage de g_normal
+  for(int i = 0 ; i < 3 * attributes[0].size ; i++)
+    g_normal.push_back(0.0f);//Gère le cas ou il n'y a pas de normale correspondante
   for(int i = 0 ; i < attributes[3].size ; i++){
-    int indNorm = int(attributes[3].val[i][0]-1.0f);
-    int indVert = int(attributes[3].val[i][1]-1.0f);
-    g_normal[ indNorm + 0 ] = attributes[2].val[ indVert ][0] ; 
-    g_normal[ indNorm + 1 ] = attributes[2].val[ indVert ][2] ; //normale en ce vertex, selon x
-    g_normal[ indNorm + 2 ] = attributes[2].val[ indVert ][1] ; //normale en ce vertex, selon x
+    int indVert = int(attributes[3].val[i][0] - 1.0f);
+    int indNorm = int(attributes[3].val[i][1] - 1.0f);
+    g_normal[3*indVert + 0] = attributes[2].val[indNorm][0];
+    g_normal[3*indVert + 1] = attributes[2].val[indNorm][2];
+    g_normal[3*indVert + 2] = attributes[2].val[indNorm][1];
   }
-  
-  cout << "minX, maxX = " << attributes[0].mins[0] << " " << attributes[0].maxs[0] << "\n"
-       << "minY, maxY = " << attributes[0].mins[1] << " " << attributes[0].maxs[1] << "\n"
-       << "minZ, maxZ = " << attributes[0].mins[2] << " " << attributes[0].maxs[2] << "\n"
-       << "mvZ        = " << attributes[0].mv[2] << "\n" 
-       << "sF         = " << attributes[0].scaleFactor << "\n" << endl;
 
+  //Remplissage de g_indices
+  for(int i = 0 ; i < attributes[1].size ; i++)
+    for(int j = 0 ; j < 3 ; j++)
+      g_indices.push_back( int(attributes[1].val[i][j] - 1.0f));
+  
+  //End Of Function
   return 1;
 }
 
@@ -196,14 +183,6 @@ int attribute::move_and_scale(){
     }
   }
   return 1;
-}
-
-int attribute::switch_indices(){
-  for(int i = 0 ; i < size ; i++){
-    for(int j = 0 ; j < 3 ; j++){
-      val[i][j]-=1.0f;
-    }
-  }
 }
 
 

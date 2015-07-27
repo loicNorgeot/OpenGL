@@ -18,7 +18,5 @@ void main(){
     fragmentColor=vec3(1.0f, 0.55f, 0.0f);
   else if(change==2.0f)
     fragmentColor=vec3(1.0f, 1.0f, 1.0f);
-  
-  //fragmentColor = normals;
   //fragmentColor = vertexColor;
 }
