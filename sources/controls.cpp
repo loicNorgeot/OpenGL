@@ -45,6 +45,7 @@ void mouse_button_callback( GLFWwindow* window,
     rotating=false;
 
 }
+
 void scroll_callback( GLFWwindow* window,
 		      double x,
 		      double y){
@@ -59,6 +60,7 @@ void scroll_callback( GLFWwindow* window,
     cam += glm::vec3(0, D*y, 0);
   }
 }
+
 void key_callback( GLFWwindow* window,
 		   int key,
 		   int scancode,
@@ -91,6 +93,14 @@ void key_callback( GLFWwindow* window,
   //Touche S pour screenshot
   if ( key == GLFW_KEY_S && action == GLFW_PRESS)
     screenshot();
+
+  //Touche numpad pour vues particulières
+  if ( key == GLFW_KEY_KP_3 && action == GLFW_PRESS)//Coté
+    cam = glm::vec3(-2,0,0);
+  if ( key == GLFW_KEY_KP_1 && action == GLFW_PRESS)//Face
+    cam = glm::vec3(0,0,-2);
+  if ( key == GLFW_KEY_KP_7 && action == GLFW_PRESS)//HAUT
+    cam = glm::vec3(0,2,0.1);
 }
 
 void GUI( GLFWwindow* window){
@@ -108,17 +118,19 @@ void GUI( GLFWwindow* window){
 }
 
 void set_view( GLFWwindow* window){
-  
-  glm::vec3 direction;
 
-  //Mode normal
+  ////////////////////////////////////////////////////////////////////////////////////////:
+  //Mode statique
   if( !FLYINGMODE){
+
     //Paramètres 
     glfwSetInputMode( window, GLFW_CURSOR,      GLFW_CURSOR_NORMAL);
     glfwSetInputMode( window, GLFW_STICKY_KEYS, GL_TRUE);
+
     //On récupère les données du curseur
     double xpos=0, ypos=0;
     glfwGetCursorPos( window, &xpos, &ypos);
+
     //Modification de l'emplacement de la caméra
     if(rotating){
       if(enterRotating){
@@ -137,18 +149,20 @@ void set_view( GLFWwindow* window){
       centerX = xpos; 
       centerY = ypos;
 
+      //Application des quaternions
       glm::mat4 rotationY   = glm::toMat4(quaternionY);
       glm::mat4 rotationX   = glm::toMat4(quaternionX);
       cam = glm::vec3( rotationY * rotationX * glm::vec4(cam,1));
     }
 
     //Actualisation de la direction de la caméra
-    direction = -cam * 2.0f;
-    look = cam + direction;  
+    look = -cam;  
   }
 
-  //Flying mode
+  ////////////////////////////////////////////////////////////////////////////////////////:
+  //Mode FLYING
   if(FLYINGMODE){
+
     //Paramètres globaux
     glfwSetInputMode( window, GLFW_CURSOR,      GLFW_CURSOR_DISABLED);
     glfwSetInputMode( window, GLFW_STICKY_KEYS, GL_FALSE);
@@ -162,9 +176,6 @@ void set_view( GLFWwindow* window){
       centerX      = xpos;
       centerY      = ypos;
       ENTERFLYMODE = false;
-      if(FIRSTENTER){
-	FIRSTENTER=false;
-      }
     }
     
     //Ajustements du FlyingMode
@@ -200,7 +211,6 @@ void set_render_type(GLFWwindow* window){
     glDepthFunc(   GL_LESS);
     glPolygonMode( GL_FRONT, GL_FILL);
     glEnable(      GL_CULL_FACE);
-    //glDisable(     GL_POLYGON_OFFSET_LINE);
   }
   if( wireframe){
     glPolygonMode( GL_FRONT_AND_BACK, GL_LINE);
@@ -241,10 +251,8 @@ void CONTROLS::listen( GLFWwindow* window){
 void screenshot(){
   BYTE* pixels = new BYTE[ 3 * width * height];
   glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, pixels);
-  // Convert to FreeImage format & save to file
   FIBITMAP* image = FreeImage_ConvertFromRawBits(pixels, width, height, 3 * width, 24, 0x0000FF, 0xFF0000, 0x00FF00, false);
   FreeImage_Save(FIF_BMP, image, "test.bmp", 0);
-  // Free resources
   FreeImage_Unload(image);
   delete [] pixels;
   cout << "Screenshot done!" << endl;

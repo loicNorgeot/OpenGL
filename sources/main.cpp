@@ -31,8 +31,6 @@ int main(){
 	    g_normal, 
 	    g_indices,
 	    g_solution);
-  cout << "yeah = " << g_solution.size() << endl;
-  cout << g_vertex.size() << endl;
 
   //Tableaux a transférer
   float *scalar_data = &g_solution[0];
