@@ -20,7 +20,7 @@
 #include "globals.h"
 
 static float FOV         = 45.0;
-static glm::vec3 cam     = glm::vec3( 0, 0, 2.0);//glm::vec3( 1.0, 1.0, 1.0);
+static glm::vec3 cam     = glm::vec3( 0, 0, 2.0);
 static glm::vec3 look    = glm::vec3( 0.0, 0.0, 0.0);
 static glm::vec3 up      = glm::vec3( 0.0, 1.0, 0.0);
 static float hAngle      = 3.14159f;
@@ -31,6 +31,9 @@ static float mouseSpeed  = 0.2f;
 static bool FLYINGMODE   = false;
 static bool ENTERFLYMODE = false;
 static bool FIRSTENTER   = true;
+
+static bool rotating     = false;
+static bool enterRotating= false;
 
 static float deltaTime   = 0;
 

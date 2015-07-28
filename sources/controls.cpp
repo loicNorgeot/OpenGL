@@ -12,6 +12,9 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/quaternion.hpp>
+
 #include "controls.h"
 
 int    render_mode    = 0;
@@ -27,18 +30,30 @@ void mouse_button_callback( GLFWwindow* window,
 			    int button,
 			    int action,
 			    int mods){
+  //Vitesse de déplacement en mode FLYING
   if ( button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
     speed = 0.05f;
   if ( button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE)
     speed = 0.5f;
+
+  //En mode statique, on change cam en fonction du mouvement de la souris, une fois pressée:
+  if ( button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+    enterRotating=true;
+  if ( glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS )
+    rotating = true;
+  else
+    rotating=false;
+
 }
 void scroll_callback( GLFWwindow* window,
 		      double x,
 		      double y){
+  //En mode statique, on zoome
   if( !FLYINGMODE){
     float D = 0.05f;
     cam -= cam * D * float(y);  
   }
+  //En mode vol, on monte et descend
   if(FLYINGMODE){
     float D = 0.01f;
     cam += glm::vec3(0, D*y, 0);
@@ -98,10 +113,38 @@ void set_view( GLFWwindow* window){
 
   //Mode normal
   if( !FLYINGMODE){
+    //Paramètres 
     glfwSetInputMode( window, GLFW_CURSOR,      GLFW_CURSOR_NORMAL);
     glfwSetInputMode( window, GLFW_STICKY_KEYS, GL_TRUE);
-    
+    //On récupère les données du curseur
+    double xpos=0, ypos=0;
+    glfwGetCursorPos( window, &xpos, &ypos);
+    //Modification de l'emplacement de la caméra
+    if(rotating){
+      if(enterRotating){
+	centerX = xpos; 
+	centerY = ypos;
+	enterRotating=false;
+      }
+      
+      float sensibility = 15.0f;
+      //Rotation autour de l'axe vertical
+      glm::quat quaternionY = glm::angleAxis(float(sensibility * deltaTime * (centerX - xpos)), 
+					     glm::vec3(0.0f, 1.0f, 0.0f));
+      //Rotation autour de l'axe "droite" par rapport à la caméra
+      glm::quat quaternionX = glm::angleAxis(float(sensibility * deltaTime * (centerY - ypos)), 
+					     glm::cross(-cam, glm::vec3(0.0f, 1.0f, 0.0f)));
+      centerX = xpos; 
+      centerY = ypos;
+
+      glm::mat4 rotationY   = glm::toMat4(quaternionY);
+      glm::mat4 rotationX   = glm::toMat4(quaternionX);
+      cam = glm::vec3( rotationY * rotationX * glm::vec4(cam,1));
+    }
+
+    //Actualisation de la direction de la caméra
     direction = -cam * 2.0f;
+    look = cam + direction;  
   }
 
   //Flying mode
@@ -121,42 +164,34 @@ void set_view( GLFWwindow* window){
       ENTERFLYMODE = false;
       if(FIRSTENTER){
 	FIRSTENTER=false;
-	float norm = pow( pow(cam[0],2) +
-			  pow(cam[1],2) +
-			  pow(cam[2],2) ,0.5);
-	vAngle      = 0.0f;//-3.14 / 4.0f;
-	hAngle      = 3.14159f;//5 * 3.14 / 4.0f;
       }
     }
     
     //Ajustements du FlyingMode
-    glfwSetCursorPos(window, centerX, centerY);
-    hAngle += mouseSpeed * deltaTime * float( centerX - xpos);
-    vAngle += mouseSpeed * deltaTime * float( centerY  - ypos);
+    glm::quat horizontalQuat = glm::angleAxis(mouseSpeed * 1.0f * float(centerX - xpos),
+					   glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::mat4 horizontalRot   = glm::toMat4(horizontalQuat);
+    glm::vec3 right = glm::cross(look, glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::quat verticalQuat = glm::angleAxis(mouseSpeed * 1.0f * float(centerY - ypos), right);
+    glm::mat4 verticalRot   = glm::toMat4(verticalQuat);
 
-    direction =       glm::vec3(  cos(vAngle) * sin( hAngle), 
-				  sin(vAngle), 
-				  cos(vAngle) * cos( hAngle));
-    glm::vec3 right = glm::vec3(  sin(hAngle - 3.14f/2.0f), 
-				  0, 
-				  cos(hAngle - 3.14f/2.0f));
-    glm::vec3 up =    glm::cross( right,
-				  direction);
+    //Actualisation de la visée
+    look = glm::vec3( verticalRot * horizontalRot * glm::vec4(look,1.0f) );
+
+    //On remet le curseur au milieu de l'écran
+    glfwSetCursorPos(window, centerX, centerY);
 
     //Mouvements de la caméra
     float D = deltaTime * speed;
     if ( glfwGetKey( window,  GLFW_KEY_UP )   == GLFW_PRESS)
-      cam += direction * D;  
+      cam += look * D;  
     if ( glfwGetKey( window,  GLFW_KEY_DOWN)  == GLFW_PRESS)
-      cam -= direction * D; 
+      cam -= look * D; 
     if ( glfwGetKey( window,  GLFW_KEY_RIGHT) == GLFW_PRESS)
       cam += right     * D; 
     if ( glfwGetKey( window,  GLFW_KEY_LEFT)  == GLFW_PRESS)
       cam -= right     * D; 
   }
-
-  //Actualisation de la visée
-  look = cam + direction;  
 }
 
 void set_render_type(GLFWwindow* window){
