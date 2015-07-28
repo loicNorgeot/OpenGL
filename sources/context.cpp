@@ -99,7 +99,10 @@ void CONTEXT::loop(){
   controls.listen(    window);
   MVP = controls.update_MVP();
 
+  //Envoi des uniformes
   glUniformMatrix4fv( MatrixID, 1, GL_FALSE, &MVP[0][0]);
+  int colorVariable = glGetUniformLocation(programID, "useColor");
+  glUniform1f(colorVariable, useColor);
 
   //Linkage des attributs
   GL_attributes(      vertexbuffer, 0, "vertexPosition_modelspace");
@@ -111,7 +114,7 @@ void CONTEXT::loop(){
 
   GL_attributes(      normalbuffer, 2, "normals");
 
-  int index = glGetUniformLocation(programID, "change");
+  int index = glGetUniformLocation(programID, "renderMode");
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesbuffer);
   //1

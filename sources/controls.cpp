@@ -15,6 +15,7 @@
 #include "controls.h"
 
 int    render_mode    = 0;
+int    useColor       = true;
 bool   wireframe      = false;
 GLenum CGL_RENDER     = GL_POINTS;
 int    width          = 1024;
@@ -37,13 +38,6 @@ void scroll_callback( GLFWwindow* window,
   if( !FLYINGMODE){
     float D = 0.05f;
     cam -= cam * D * float(y);  
-    /*
-    FOV += y * (-2);
-    if( FOV <= 1.0f)
-      FOV = 1.0f;
-    if( FOV >= 80.0f)
-    FOV = 80.0f;
-    */
   }
   if(FLYINGMODE){
     float D = 0.01f;
@@ -56,18 +50,12 @@ void key_callback( GLFWwindow* window,
 		   int action,
 		   int mods){
   
-  //Touche P pour nuage de points
-  if ( scancode == 33 && action == GLFW_PRESS){
-    if(CGL_RENDER==GL_TRIANGLES){
-      glPolygonMode(     GL_FRONT, GL_POINT);
-      CGL_RENDER = GL_POINTS;
-    }
-    else
-      CGL_RENDER = GL_TRIANGLES;
-    cout << "Render: " << CGL_RENDER << endl;
+  //Touche C pour le toogle couleur
+  if ( key == GLFW_KEY_C && action == GLFW_PRESS){
+      useColor=!useColor;
+    cout << "Use color: " << useColor << endl;
   }
   
-
   //Touche Z pour mode wireframe
   if ( scancode == 25 && action == GLFW_PRESS){
     render_mode++;
@@ -112,6 +100,7 @@ void set_view( GLFWwindow* window){
   if( !FLYINGMODE){
     glfwSetInputMode( window, GLFW_CURSOR,      GLFW_CURSOR_NORMAL);
     glfwSetInputMode( window, GLFW_STICKY_KEYS, GL_TRUE);
+    
     direction = -cam * 2.0f;
   }
 
