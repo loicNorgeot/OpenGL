@@ -95,12 +95,15 @@ void key_callback( GLFWwindow* window,
     screenshot();
 
   //Touche numpad pour vues particulières
-  if ( key == GLFW_KEY_KP_3 && action == GLFW_PRESS)//Coté
+  if ( key == GLFW_KEY_KP_3 && action == GLFW_PRESS){//Coté
     cam = glm::vec3(-2,0,0);
-  if ( key == GLFW_KEY_KP_1 && action == GLFW_PRESS)//Face
+    look = -cam;}
+  if ( key == GLFW_KEY_KP_1 && action == GLFW_PRESS){//Face
     cam = glm::vec3(0,0,-2);
-  if ( key == GLFW_KEY_KP_7 && action == GLFW_PRESS)//HAUT
+    look = -cam;}
+  if ( key == GLFW_KEY_KP_7 && action == GLFW_PRESS){//HAUT
     cam = glm::vec3(0,2,0.1);
+    look = -cam;}
 }
 
 void GUI( GLFWwindow* window){
