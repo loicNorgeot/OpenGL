@@ -23,17 +23,27 @@ using namespace glm;
 int main(){
 
   //Lecture
-  std::vector<float> g_vertex, g_normal;
+  std::vector<float> g_vertex, g_normal, g_solution;
   std::vector<int>   g_indices;
-  mesh_read("/home/loic/Blender/MESH/FauduetBone.o1.mesh", g_vertex, g_normal, g_indices);
+  mesh_read("/home/loic/Blender/MESH/FauduetBone.o1.mesh", 
+	    "/home/loic/toto.sol",
+	    g_vertex, 
+	    g_normal, 
+	    g_indices,
+	    g_solution);
+  cout << "yeah = " << g_solution.size() << endl;
+  cout << g_vertex.size() << endl;
 
   //Tableaux a transférer
   //Couleurs
-  float colors[3] = {0.8f, 0.6f, 0.0f};
-  float *colors_data = new float[g_vertex.size()];
-  for(int i = 0 ; i < g_vertex.size() / 3 ; i+=3)
-    for(int j = 0 ; j < 3 ; j++)
-      colors_data[i+j] = colors[j];
+  //float colors[3] = {0.8f, 0.6f, 0.0f};
+  float *scalar_data = &g_solution[0];
+  //for(int i = 0 ; i < g_solution.size() ; i+=3){
+  //colors_data[i + 0] = g_solution[i];
+  //colors_data[i + 1] = 0.0f;
+  //colors_data[i + 2] = 1.0f - g_solution[i];
+  //}
+  //colors_data[3*i + j] = colors[j];
   //Position et normales
   float *vertex_data = &g_vertex[0];
   float *normal_data = &g_normal[0];
@@ -53,7 +63,7 @@ int main(){
 
   //Buffers de données
   context.vertexbuffer  = context.GL_array_buffer( vertex_data, 3);
-  context.colorbuffer   = context.GL_array_buffer( colors_data, 3);
+  context.colorbuffer   = context.GL_array_buffer( scalar_data, 1);
   context.normalbuffer  = context.GL_array_buffer( normal_data, 3);
   context.indicesbuffer = context.GL_index_buffer( indice_data, context.nbIndices);
   
@@ -64,7 +74,7 @@ int main(){
 
   //Nettoyage
   glfwDestroyWindow(context.window);
-  delete[] colors_data;
+  delete[] scalar_data;
   delete[] vertex_data;
   delete[] normal_data;
   delete[] indice_data;

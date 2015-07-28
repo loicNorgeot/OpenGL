@@ -21,7 +21,7 @@ public:
   int get_gravity_center();
 };
 
-int mesh_read(std::string filename, std::vector<float> &g_vertex, std::vector<float> &g_normal, std::vector<int> &g_indices);
+int mesh_read(std::string meshFile, std::string solFile, std::vector<float> &g_vertex, std::vector<float> &g_normal, std::vector<int> &g_indices, std::vector<float> &g_solution);
 
 
 #endif

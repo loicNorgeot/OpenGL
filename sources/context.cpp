@@ -51,7 +51,7 @@ int CONTEXT::init( int sizeX,
   //VAO, color and depth
   glGenVertexArrays( 1,        &VertexArrayID); 
   glBindVertexArray( VertexArrayID);
-  glClearColor(      0.0f,     0.00f, 0.0f, 0.0f);
+  glClearColor(      0.0f,     0.0f, 0.0f, 0.0f);
   glEnable(          GL_DEPTH_TEST); 
   glEnable(          GL_CULL_FACE);
   glDepthFunc(       GL_LESS);
@@ -103,7 +103,12 @@ void CONTEXT::loop(){
 
   //Linkage des attributs
   GL_attributes(      vertexbuffer, 0, "vertexPosition_modelspace");
-  GL_attributes(      colorbuffer , 1, "vertexColor");
+  //GL_attributes(      colorbuffer , 1, "vertexColor");
+  glEnableVertexAttribArray( 1); 
+  glBindBuffer(GL_ARRAY_BUFFER, colorbuffer); 
+  glVertexAttribPointer(1,1,GL_FLOAT,GL_FALSE, 0, ( void*)0);
+  glBindAttribLocation(programID, 1, "vertexColor");
+
   GL_attributes(      normalbuffer, 2, "normals");
 
   int index = glGetUniformLocation(programID, "change");

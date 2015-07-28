@@ -24,23 +24,25 @@ static int lineNumber = 0;
 
 
 //Lecture d'un fichier .mesh
-int mesh_read( string filename, 
+int mesh_read( string meshFile, 
+	       string solFile,
 	       std::vector<float> &g_vertex,
 	       std::vector<float> &g_normal,
-	       std::vector<int>   &g_indices){
-  
+	       std::vector<int>   &g_indices,
+	       std::vector<float> &g_solution){
+
   //Create the attributes
   attribute attributes[] = {attribute(),//Vertices
 			    attribute(),//Triangles
 			    attribute(),//Normals
 			    attribute()};//NormalAtVertices
   
-  //Open a file
+  //////////////////////////////////////////////////////
+  //MESHFILE READING
   ifstream fin;
-  fin.open( filename.c_str());
+  fin.open( meshFile.c_str());
   if ( !fin.good()) 
     return 0;
-
   //Read each line
   while (!fin.eof()){
 
@@ -96,6 +98,18 @@ int mesh_read( string filename,
     lineNumber++;
   }
 
+
+  //////////////////////////////////////////////////////
+  //SOLFILE READING
+  std::ifstream file(solFile);
+  if( !file.good())
+    return 0;
+  std::string str;
+  while(std::getline(file, str)){
+    g_solution.push_back(stof(str));
+  }
+    
+   
   //POSTPROCESSING VERTICES
   attributes[0].get_bounding_box();
   attributes[0].get_gravity_center();
