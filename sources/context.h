@@ -4,6 +4,7 @@
 #include <string>
 #include "controls.h"
 
+
 class CONTEXT{
 public:
   GLFWwindow* window;
@@ -11,10 +12,12 @@ public:
   GLuint VertexArrayID;
   GLuint programID;
   GLuint MatrixID;
+
   GLuint vertexbuffer;
   GLuint colorbuffer;
   GLuint normalbuffer;
   GLuint indicesbuffer;
+  GLuint uvbuffer;
 
   int nbVertices;
   int nbIndices;

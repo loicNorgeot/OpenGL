@@ -23,6 +23,7 @@ bool   wireframe      = false;
 GLenum CGL_RENDER     = GL_POINTS;
 int    width          = 1024;
 int    height         = 768;
+bool   UV             = true;
 
 using namespace std;
 
@@ -260,3 +261,10 @@ void screenshot(){
   delete [] pixels;
   cout << "Screenshot done!" << endl;
 }
+
+
+
+
+
+
+

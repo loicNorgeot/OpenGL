@@ -8,4 +8,6 @@ extern GLenum    CGL_RENDER;
 extern int       width;
 extern int       height;
 
+extern bool      UV;
+
 #endif
