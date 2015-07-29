@@ -17,12 +17,13 @@
 #include "context.h"
 #include "mesh.h"
 
+#include "ply.h"
+
 using namespace std;
 using namespace glm;
 
 int main(){
-
-  //Lecture
+  //Lecture d'un fichier .MESH, avec éventuellement un .sol correspondant
   std::vector<float> g_vertex, g_normal, g_solution;
   std::vector<int>   g_indices;
   mesh_read("/home/loic/Blender/MESH/FauduetBone.o1.mesh", 
@@ -31,6 +32,14 @@ int main(){
 	    g_normal, 
 	    g_indices,
 	    g_solution);
+
+  //Lecture d'un fichier .ply, et spécification de l'image
+  /*
+  std::vector<float> g_vert, g_uv;
+  ply_read("/home/loic/Blender/PLY/c_nardoni.ply",
+	   g_vert,
+	   g_uv);
+  */
 
   //Tableaux a transférer
   float *scalar_data = &g_solution[0];

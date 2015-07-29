@@ -146,7 +146,6 @@ int mesh_read( string meshFile,
   return 1;
 }
 
-//int get_bounding_box(int &mx, int &Mx, int &my, int &My, int &mz, int &Mz){
 int attribute::get_bounding_box(){
   
   for(int i = 0 ; i < size ; i++){
@@ -172,7 +171,6 @@ int attribute::get_gravity_center(){
   }
   for(int j = 0 ; j < 3 ; j++){
     gravity_center[j]/=size;
-    cout << "grav " << j << " = " << gravity_center[j] << endl;
   }
 }
 
