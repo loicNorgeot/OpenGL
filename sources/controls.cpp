@@ -23,7 +23,8 @@ bool   wireframe      = false;
 GLenum CGL_RENDER     = GL_POINTS;
 int    width          = 1024;
 int    height         = 768;
-bool   UV             = true;
+bool   UV             = false;
+
 
 using namespace std;
 

@@ -29,10 +29,11 @@ GLuint loadTexture (FIBITMAP  * dib1);
 
 int main(){
   //Chemins des fichiers d'entrée
-  string meshFile = "/home/loic/Blender/MESH/FauduetBone.o1.mesh";//NULL;
-  string solFile  = "/home/loic/toto.sol";//NULL;
-  string plyFile  = "/home/loic/Blender/PLY/c_nardoni.ply";//NULL;
-  string imgFile  = "/home/loic/Blender/TEX/c_nardoni_2048.jpg";//NULL;
+  string assetPath = "assets/";
+  string meshFile = assetPath + "FauduetBone.o1.mesh";//NULL;
+  string solFile  = assetPath + "toto.sol";//NULL;
+  string plyFile  = assetPath + "c_nardoni.ply";//NULL;
+  string imgFile  = assetPath + "c_nardoni_2048.jpg";//NULL;
   FIBITMAP *dib1  = NULL;
 
   //Lecture d'un fichier .MESH, avec éventuellement un .sol correspondant
