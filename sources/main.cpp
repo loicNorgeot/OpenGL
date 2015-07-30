@@ -32,7 +32,7 @@ int main(){
   string meshFile = "/home/loic/Blender/MESH/FauduetBone.o1.mesh";//NULL;
   string solFile  = "/home/loic/toto.sol";//NULL;
   string plyFile  = "/home/loic/Blender/PLY/c_nardoni.ply";//NULL;
-  string imgFile  = "/home/loic/Blender/TEX/c_nardoni_512.jpg";//NULL;
+  string imgFile  = "/home/loic/Blender/TEX/c_nardoni_2048.jpg";//NULL;
   FIBITMAP *dib1  = NULL;
 
   //Lecture d'un fichier .MESH, avec éventuellement un .sol correspondant
@@ -92,11 +92,9 @@ int main(){
   //Linkage de la matrice
   context.MatrixID      = glGetUniformLocation(context.programID, "MVP"); 
 
+  loadTexture(dib1);
   //Boucle principale
-  while( glfwGetKey(context.window, GLFW_KEY_ESCAPE ) != GLFW_PRESS && !glfwWindowShouldClose(context.window)){
-    loadTexture(dib1);
-    context.loop();
-  }
+  context.loop();
 
   //Nettoyage
   if(UV)
