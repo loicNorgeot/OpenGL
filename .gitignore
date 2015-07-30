@@ -1,7 +1,10 @@
 *~
-*.txt
 *.jpg
 *.jpeg
 *.png
 *#
 #*
+
+CMakeCache.txt
+CMakeFiles/*
+cmake_install.cmake

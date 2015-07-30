@@ -101,12 +101,12 @@ int mesh_read( string meshFile,
 
   //////////////////////////////////////////////////////
   //SOLFILE READING
-  std::ifstream file(solFile);
+  std::ifstream file(solFile.c_str());
   if( !file.good())
     return 0;
   std::string str;
   while(std::getline(file, str)){
-    g_solution.push_back(stof(str));
+    g_solution.push_back(atof(str.c_str()));
   }
     
    

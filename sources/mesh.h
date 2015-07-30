@@ -10,7 +10,7 @@ public:
   int size;                               //Number of elements
   float mins[3];
   float maxs[3];
-  float gravity_center[3] = {0,0,0};
+  float gravity_center[3];
   
   float mv[3];         //Move
   float scaleFactor;   //Scale
