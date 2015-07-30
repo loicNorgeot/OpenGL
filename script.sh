@@ -1,6 +1,8 @@
 mkdir -p executables
 mkdir -p build
 make clean
-make main
-sleep 0.1
-executables/./main
+cmake -G "Unix Makefiles"
+make
+#make clean
+#make main
+executables/./visu
