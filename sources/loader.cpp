@@ -1,6 +1,5 @@
 #include <string.h>
 #include <vector>
-#include <glm/glm.hpp>
 #include <cstdlib>
 #include <fstream>
 #include <iostream>

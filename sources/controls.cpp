@@ -28,115 +28,21 @@ int    height         = 768;
 bool   UV             = true;
 string RENDER         = "";
 
-void mouse_button_callback( GLFWwindow* window,
-			    int button,
-			    int action,
-			    int mods){
-  //Vitesse de déplacement en mode FLYING
-  if ( button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
-    speed = 0.05f;
-  if ( button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE)
-    speed = 0.5f;
-
-  //En mode statique, on change cam en fonction du mouvement de la souris, une fois pressée:
-  if ( button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
-    enterRotating=true;
-  if ( glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS )
-    rotating = true;
-  else
-    rotating=false;
-
-}
-
-void scroll_callback( GLFWwindow* window,
-		      double x,
-		      double y){
-  //En mode statique, on zoome
-  if( !FLYINGMODE){
-    float D = 0.05f;
-    cam -= cam * D * float(y);  
-  }
-  //En mode vol, on monte et descend
-  if(FLYINGMODE){
-    float D = 0.01f;
-    cam += glm::vec3(0, D*y, 0);
-  }
-}
-
-void key_callback( GLFWwindow* window,
-		   int key,
-		   int scancode,
-		   int action,
-		   int mods){
-  
-  //Touche C pour le toogle couleur
-  if ( key == GLFW_KEY_C && action == GLFW_PRESS){
-      useColor=!useColor;
-    cout << "Use color: " << useColor << endl;
-  }
-  
-  //Touche Z pour mode wireframe
-  if ( scancode == 25 && action == GLFW_PRESS){
-    render_mode++;
-    if(render_mode==3)
-      render_mode=0;
-    cout << "Render mode: " << render_mode << endl;
-  }
-
-  //Touche F pour FLY mode
-  if ( key == GLFW_KEY_F && action == GLFW_PRESS){
-    //Si on sort du mode normal
-    if( !FLYINGMODE)
-      ENTERFLYMODE=true;
-    FLYINGMODE = !FLYINGMODE;
-    cout << "Fly Mode: " << FLYINGMODE << endl;
-  }
-
-  //Touche S pour screenshot
-  if ( key == GLFW_KEY_S && action == GLFW_PRESS)
-    screenshot();
-
-  //Touche numpad pour vues particulières
-  if ( key == GLFW_KEY_KP_3 && action == GLFW_PRESS){//Coté
-    cam = glm::vec3(-2,0,0);
-    look = -cam;}
-  if ( key == GLFW_KEY_KP_1 && action == GLFW_PRESS){//Face
-    cam = glm::vec3(0,0,-2);
-    look = -cam;}
-  if ( key == GLFW_KEY_KP_7 && action == GLFW_PRESS){//HAUT
-    cam = glm::vec3(0,2,0.1);
-    look = -cam;}
-}
-
-void GUI( GLFWwindow* window){
-  //Calcul du deltaTime
-  static double lastTime    = glfwGetTime();
-  double        currentTime = glfwGetTime(); 
-  deltaTime                 = float( currentTime - lastTime);
-
-  //Actions de la GUI
-  set_view(        window);
-  set_render_type( window);
-    
-  //Actualisation du temps
-  lastTime = currentTime;
-}
-
-void set_view( GLFWwindow* window){
+void CONTROLS::set_view( GLFWwindow* window){
 
   ////////////////////////////////////////////////////////////////////////////////////////:
-  //Mode statique
+  //Static mode
   if( !FLYINGMODE){
 
-    //Paramètres 
+    //Parameters
     glfwSetInputMode( window, GLFW_CURSOR,      GLFW_CURSOR_NORMAL);
     glfwSetInputMode( window, GLFW_STICKY_KEYS, GL_TRUE);
 
-    //On récupère les données du curseur
+    //Cursor data
     double xpos=0, ypos=0;
     glfwGetCursorPos( window, &xpos, &ypos);
 
-    //Modification de l'emplacement de la caméra
+    //Cam position modification
     if(rotating){
       if(enterRotating){
 	centerX = xpos; 
@@ -145,22 +51,22 @@ void set_view( GLFWwindow* window){
       }
       
       float sensibility = 15.0f;
-      //Rotation autour de l'axe vertical
+      //Vertical axis rotation
       glm::quat quaternionY = glm::angleAxis(float(sensibility * deltaTime * (centerX - xpos)), 
 					     glm::vec3(0.0f, 1.0f, 0.0f));
-      //Rotation autour de l'axe "droite" par rapport à la caméra
+      //"Right axis rotation"
       glm::quat quaternionX = glm::angleAxis(float(sensibility * deltaTime * (centerY - ypos)), 
 					     glm::cross(-cam, glm::vec3(0.0f, 1.0f, 0.0f)));
       centerX = xpos; 
       centerY = ypos;
 
-      //Application des quaternions
+      //Quaternion application
       glm::mat4 rotationY   = glm::toMat4(quaternionY);
       glm::mat4 rotationX   = glm::toMat4(quaternionX);
       cam = glm::vec3( rotationY * rotationX * glm::vec4(cam,1));
     }
 
-    //Actualisation de la direction de la caméra
+    //Camera direction update
     look = -cam;  
   }
 
@@ -168,22 +74,22 @@ void set_view( GLFWwindow* window){
   //Mode FLYING
   if(FLYINGMODE){
 
-    //Paramètres globaux
+    //Global parameters
     glfwSetInputMode( window, GLFW_CURSOR,      GLFW_CURSOR_DISABLED);
     glfwSetInputMode( window, GLFW_STICKY_KEYS, GL_FALSE);
     
-    //On récupère les données du curseur
+    //Cursor data
     double xpos=0, ypos=0;
     glfwGetCursorPos( window, &xpos, &ypos);
 
-    //A l'entrée
+    //Upon enter
     if( ENTERFLYMODE){
       centerX      = xpos;
       centerY      = ypos;
       ENTERFLYMODE = false;
     }
     
-    //Ajustements du FlyingMode
+    //Flying mode tweaking
     glm::quat horizontalQuat = glm::angleAxis(mouseSpeed * 1.0f * float(centerX - xpos),
 					   glm::vec3(0.0f, 1.0f, 0.0f));
     glm::mat4 horizontalRot   = glm::toMat4(horizontalQuat);
@@ -191,13 +97,13 @@ void set_view( GLFWwindow* window){
     glm::quat verticalQuat = glm::angleAxis(mouseSpeed * 1.0f * float(centerY - ypos), right);
     glm::mat4 verticalRot   = glm::toMat4(verticalQuat);
 
-    //Actualisation de la visée
+    //Direction update
     look = glm::vec3( verticalRot * horizontalRot * glm::vec4(look,1.0f) );
 
-    //On remet le curseur au milieu de l'écran
+    //Cursor back to the middle of screen
     glfwSetCursorPos(window, centerX, centerY);
 
-    //Mouvements de la caméra
+    //Camera movements
     float D = deltaTime * speed;
     if ( glfwGetKey( window,  GLFW_KEY_UP )   == GLFW_PRESS)
       cam += look * D;  
@@ -210,7 +116,7 @@ void set_view( GLFWwindow* window){
   }
 }
 
-void set_render_type(GLFWwindow* window){
+void CONTROLS::set_render_type(GLFWwindow* window){
   if( !wireframe){
     glEnable(      GL_DEPTH_TEST);
     glDepthFunc(   GL_LESS);
@@ -247,10 +153,19 @@ glm::mat4 CONTROLS::update_MVP(){
 }
 
 void CONTROLS::listen( GLFWwindow* window){
-  GUI(                        window);
-  glfwSetScrollCallback(      window, scroll_callback);
+  //Time computation
+  static double lastTime    = glfwGetTime();
+  double        currentTime = glfwGetTime(); 
+  deltaTime                 = float( currentTime - lastTime);
+  //Main actions
+  set_view(        window);
+  set_render_type( window);
+  //Time update
+  lastTime = currentTime;
+  //Callbacks definitions
+  glfwSetScrollCallback(window, scroll_callback);
   glfwSetMouseButtonCallback( window, mouse_button_callback);
-  glfwSetKeyCallback(         window, key_callback);
+  glfwSetKeyCallback(window, key_callback);
 }
 
 void screenshot(){
@@ -265,7 +180,83 @@ void screenshot(){
 
 
 
+///////////////////////////////////////////////////////////////////////////////
+// CALLBACK FUNCTIONS
 
+void mouse_button_callback( GLFWwindow* window,
+			    int button,
+			    int action,
+			    int mods){
+  //Displacement speed in FLYING MODE
+  if ( button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
+    speed = 0.05f;
+  if ( button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE)
+    speed = 0.5f;
 
+  //Mesh rotation in static mode
+  if ( button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+    enterRotating=true;
+  if ( glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS )
+    rotating = true;
+  else
+    rotating=false;
+}
 
+void scroll_callback( GLFWwindow* window,
+		      double x,
+		      double y){
+  //Zoom in static mode
+  if( !FLYINGMODE){
+    float D = 0.05f;
+    cam -= cam * D * float(y);  
+  }
+  //Vertical movement in FLYING MODE
+  if(FLYINGMODE){
+    float D = 0.01f;
+    cam += glm::vec3(0, D*y, 0);
+  }
+}
 
+void key_callback( GLFWwindow* window,
+		   int key,
+		   int scancode,
+		   int action,
+		   int mods){
+  
+  //C to toogle color
+  if ( key == GLFW_KEY_C && action == GLFW_PRESS){
+      useColor=!useColor;
+    cout << "Use color: " << useColor << endl;
+  }
+  
+  //Z for wireframe
+  if ( scancode == 25 && action == GLFW_PRESS){
+    render_mode++;
+    if(render_mode==3)
+      render_mode=0;
+    cout << "Render mode: " << render_mode << endl;
+  }
+
+  //F to toogle FLYING MODE
+  if ( key == GLFW_KEY_F && action == GLFW_PRESS){
+    if( !FLYINGMODE)
+      ENTERFLYMODE=true;
+    FLYINGMODE = !FLYINGMODE;
+    cout << "Fly Mode: " << FLYINGMODE << endl;
+  }
+
+  //Touche S pour screenshot
+  if ( key == GLFW_KEY_S && action == GLFW_PRESS)
+    screenshot();
+
+  //Numerical keypad for special orientations
+  if ( key == GLFW_KEY_KP_3 && action == GLFW_PRESS){//Side
+    cam = glm::vec3(-2,0,0);
+    look = -cam;}
+  if ( key == GLFW_KEY_KP_1 && action == GLFW_PRESS){//Face
+    cam = glm::vec3(0,0,-2);
+    look = -cam;}
+  if ( key == GLFW_KEY_KP_7 && action == GLFW_PRESS){//Up
+    cam = glm::vec3(0,2,0.1);
+    look = -cam;}
+}

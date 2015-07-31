@@ -1,12 +1,3 @@
-/**
- * \file      context.cpp
- * \author    Norgeot
- * \brief     Implements the functions corresponding to the OpenGL context.
- *
- * \details   This class wraps the OpenGL context and window methods,
- * allowing the internal mechanics not to be seen for the user.
- */
-
 #include <stdio.h> 
 #include <stdlib.h>
 #include <iostream>
@@ -29,22 +20,6 @@ int CONTEXT::init( int sizeX,
 		   string windowName,
 		   int major,
 		   int minor){
-  /** 
-   * \brief       Initialise les contextes GLFW et GLEW,
-   *  et créé fenetre et VAO.
-   *
-   * \details     Proceeds to GLFWInit(), then creates the window   
-   * and puts it in the current context.
-   * GLEW is then initialized, before the definition of some basic OpenGL 
-   * properties, as background color... etc
-   * \param   sizeX       window width
-   * \param   sizeY       window height
-   * \param   windowName  window title
-   * \param   major       OPENGL version major
-   * \param   minor       OPENGL version minor
-   * \return  Un \e int representant le statut d'éxécution
-   */
-
   //GLFW Initialization
   glfwWindowHint( GLFW_SAMPLES,               4);
   glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, major);
@@ -125,15 +100,15 @@ void CONTEXT::loop(){
     controls.listen(    window);
     MVP = controls.update_MVP();
     
-    //Envoi des uniformes
+    //Uniforms
     glUniformMatrix4fv( MatrixID, 1, GL_FALSE, &MVP[0][0]);
     
-    //Envoi de tous les buffers
+    //Buffer send
     int index = glGetUniformLocation(programID, "renderMode");
     int colorVariable = glGetUniformLocation(programID, "useColor");
     glUniform1f(colorVariable, useColor);
 
-    //Linkage des attributs
+    //Attributes linking
     GL_attributes(      vertexbuffer, 0, 3, "vertexPosition_modelspace");
     if(RENDER=="MESH_SOL"){
       GL_attributes(      colorbuffer , 1, 1, "vertexColor");
@@ -146,7 +121,7 @@ void CONTEXT::loop(){
       GL_attributes(colorbuffer, 1, 3, "vertexColor");
     }
     
-    //Rendu avec faces colorées
+    //Full face render
     if(render_mode==0){
       wireframe=false;
       glUniform1f(index, 0.0f);
@@ -165,7 +140,7 @@ void CONTEXT::loop(){
       else
 	glDrawArrays(CGL_RENDER, 0, nbVertices);
     }
-    //Rendu en mode wireframe
+    //Wireframe render
     else if (render_mode==1 || render_mode==2){
       wireframe=true;
       glLineWidth(1.0f);
@@ -175,7 +150,7 @@ void CONTEXT::loop(){
       else
 	glDrawArrays(CGL_RENDER, 0, nbVertices);
     }
-    //Rendu en nuage de points
+    //Points cloud render
     else if (render_mode == 3){
       if(RENDER!="PLY_UV")
 	glDrawElements( CGL_RENDER, nbIndices, GL_UNSIGNED_INT, (void*)0);
@@ -183,7 +158,7 @@ void CONTEXT::loop(){
 	glDrawArrays(CGL_RENDER, 0, nbVertices);
     }
     
-    //Fin et nettoyage
+    //Freeing ressources
     glDisableVertexAttribArray( 0);
     glDisableVertexAttribArray( 1);
     glDisableVertexAttribArray( 2);
