@@ -15,17 +15,19 @@
 using namespace std;
 
 int main(){
-  //Chemins des fichiers d'entrée
+  //Render type
+  RENDER = "PLY_UV";
+
+  //Input paths
   string assetPath = "assets/";
-  string meshFile  = assetPath + "FauduetBone.o1.mesh";//NULL;
-  string solFile   = assetPath + "toto.sol";//NULL;
-  string plyFile   = assetPath + "c_nardoni.ply";//NULL;
+  string meshFile  = assetPath + "FauduetBone.o1.mesh";
+  string solFile   = assetPath + "toto.sol";
+  string plyFile   = assetPath + "c_nardoni.ply";
   string plyFileT  = assetPath + "3260.ply";
-  string imgFile   = assetPath + "c_nardoni_2048.jpg";//NULL;
+  string imgFile   = assetPath + "c_nardoni_2048.jpg";
   FIBITMAP *dib1   = NULL;
 
-  //Paramètres en fonction du type souhaité
-  RENDER = "MESH_SOL";
+  //Parameters according to the render type
   Mesh mesh;
   if(RENDER=="MESH_SOL"){
     UV = false;
@@ -48,11 +50,11 @@ int main(){
     mesh = M;
   }
 
-  //Chargement de la texture
+  //Texture loading
   if(UV)
     dib1 = loadImage(imgFile);
 
-  //Création des tableaux de buffer
+  //Buffer array
   float *vert_data   = &mesh.verts[0];
   float *uv_data     = &mesh.uv[0];
   float *normal_data = &mesh.normals[0];
@@ -60,12 +62,12 @@ int main(){
   int   *indice_data = &mesh.indices[0];
 
 
-  //Initialisation
+  //Initialization
   CONTEXT context;
   context.init(width, height, "TESTS OPENGL", 3, 3);
   
 
-  //Création des buffers et spécifications du contexte
+  //Buffers and context specifications
   context.nbVertices    = mesh.verts.size()/3;
   context.vertexbuffer  = context.GL_array_buffer( vert_data, 3);
 
@@ -106,17 +108,17 @@ int main(){
   }
 
 
-  //Linkage de la matrice
+  //Matrix link
   context.MatrixID      = glGetUniformLocation(context.programID, "MVP"); 
 
-  //Chargement de la texture
+  //Texture loading
   if(UV)
     loadTexture(dib1);
 
-  //Boucle principale
+  //Main loop
   context.loop();
 
-  //Nettoyage
+  //Freeing ressources
   if(UV)
     FreeImage_Unload(dib1);
   glfwDestroyWindow(context.window);
