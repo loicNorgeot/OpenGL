@@ -28,8 +28,8 @@ public:
 
   int init(int sizeX, int sizeY, std::string windowName, int major, int minor);
   GLuint GL_array_buffer(const float* p_data, int dimension);
-  GLuint GL_index_buffer( const int* indices,int dimension);
-  void GL_attributes(GLuint buffer, int index, std::string name);
+  GLuint GL_index_buffer( const int* indices);
+  void GL_attributes(GLuint buffer, int index, int dimension, std::string name);
   void loop();
 };
 

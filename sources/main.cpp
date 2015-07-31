@@ -17,9 +17,8 @@
 #include "shader.h"
 #include "controls.h"
 #include "context.h"
-#include "mesh.h"
 
-#include "ply.h"
+#include "loader.h"
 
 using namespace std;
 using namespace glm;
@@ -30,70 +29,109 @@ GLuint loadTexture (FIBITMAP  * dib1);
 int main(){
   //Chemins des fichiers d'entrée
   string assetPath = "assets/";
-  string meshFile = assetPath + "FauduetBone.o1.mesh";//NULL;
-  string solFile  = assetPath + "toto.sol";//NULL;
-  string plyFile  = assetPath + "c_nardoni.ply";//NULL;
-  string imgFile  = assetPath + "c_nardoni_2048.jpg";//NULL;
-  FIBITMAP *dib1  = NULL;
+  string meshFile  = assetPath + "FauduetBone.o1.mesh";//NULL;
+  string solFile   = assetPath + "toto.sol";//NULL;
+  string plyFile   = assetPath + "c_nardoni.ply";//NULL;
+  string plyFileT  = assetPath + "3260.ply";
+  string imgFile   = assetPath + "c_nardoni_2048.jpg";//NULL;
+  FIBITMAP *dib1   = NULL;
 
-  //Lecture d'un fichier .MESH, avec éventuellement un .sol correspondant
-  std::vector<float> g_vertex, g_normal, g_solution;
-  std::vector<int>   g_indices;
-  if(!UV){
-    mesh_read(meshFile, 
-	      solFile,
-	      g_vertex, 
-	      g_normal, 
-	      g_indices,
-	      g_solution);
+  //Paramètres en fonction du type souhaité
+  RENDER = "PLY_COLORS";
+  Mesh mesh;
+  if(RENDER=="MESH_SOL"){
+    UV = false;
+    Mesh M(RENDER, meshFile, solFile, "");
+    mesh = M;
+  }
+  else if(RENDER=="MESH"){
+    UV = false;
+    Mesh M(RENDER, meshFile, "", "");
+    mesh = M;
+  }
+  else if(RENDER=="PLY_UV"){
+    UV = true;
+    Mesh M(RENDER, plyFile, "", imgFile);
+    mesh = M;
+  }
+  else if(RENDER=="PLY_COLORS"){
+    UV = false;
+    Mesh M(RENDER, plyFileT, "", "");
+    mesh = M;
   }
 
-  //Lecture d'un fichier .ply, et spécification de l'image
-  std::vector<float> g_vert, g_uv;
-  if(UV){
-    ply_read(plyFile,
-	     g_vert,
-	     g_uv);
-    //Chargement de la texture
+  //Chargement de la texture
+  if(UV)
     dib1 = loadImage(imgFile);
-    loadTexture(dib1);
-  }
 
-  //Tableaux a transférer
-  float *vert_data   = &g_vert[0];
-  float *uv_data     = &g_uv[0];
-  float *scalar_data = &g_solution[0];
-  float *vertex_data = &g_vertex[0];
-  float *normal_data = &g_normal[0];
-  int   *indice_data = &g_indices[0];
-  
+  //Création des tableaux de buffer
+  float *vert_data   = &mesh.verts[0];
+  float *uv_data     = &mesh.uv[0];
+  float *normal_data = &mesh.normals[0];
+  float *color_data  = &mesh.colors[0];
+  int   *indice_data = &mesh.indices[0];
+
+
   //Initialisation
   CONTEXT context;
   context.init(width, height, "TESTS OPENGL", 3, 3);
   
+
   //Création des buffers et spécifications du contexte
-  if(!UV){
-    context.programID     = LoadShaders("shaders/classic_shader.vert",
-					"shaders/classic_shader.frag");
-    context.nbVertices    = g_vertex.size()/3;
-    context.nbIndices     = g_indices.size();
-    context.vertexbuffer  = context.GL_array_buffer( vertex_data, 3);
-    context.colorbuffer   = context.GL_array_buffer( scalar_data, 1);
+  context.nbVertices    = mesh.verts.size()/3;
+  context.vertexbuffer  = context.GL_array_buffer( vert_data, 3);
+
+  /////////////////////////////
+  //.MESH
+  if((RENDER == "MESH") || (RENDER == "MESH_SOL")){
+    if(RENDER=="MESH_SOL"){
+      context.colorbuffer   = context.GL_array_buffer( color_data, 1);
+      context.programID     = LoadShaders("shaders/sol_shader.vert",
+					  "shaders/sol_shader.frag");
+    }
+    else if (RENDER == "MESH")
+      context.programID     = LoadShaders("shaders/uni_shader.vert",
+					  "shaders/uni_shader.frag");
+    context.nbIndices     = mesh.indices.size();
     context.normalbuffer  = context.GL_array_buffer( normal_data, 3);
-    context.indicesbuffer = context.GL_index_buffer( indice_data, context.nbIndices);
+    context.indicesbuffer = context.GL_index_buffer( indice_data);
+    
   }
-  else if(UV){
+  
+  /////////////////////////////
+  //.PLY without UV texture
+  else if(RENDER=="PLY_COLORS"){
+    context.programID     = LoadShaders("shaders/col_shader.vert",
+					"shaders/col_shader.frag");
+    context.nbIndices     = mesh.indices.size();
+    context.indicesbuffer = context.GL_index_buffer( indice_data);
+    context.colorbuffer   = context.GL_array_buffer( color_data, 3);
+    //cout << mesh.colors.size() << endl;
+    //cout << context.nbVertices << endl;
+    //cout << context.nbIndices << endl;
+    //for(int i = 0 ; i < mesh.colors.size() ; i+=mesh.colors.size()/10)
+    //  cout << color_data[i+0] << " " 
+    //   << color_data[i+1] << " " 
+    //	   << color_data[i+2] << endl;
+  }
+    
+  /////////////////////////////
+  //.PLY with UV texture
+  else if(RENDER=="PLY_UV"){
     context.programID     = LoadShaders("shaders/uv_shader.vert",
 					"shaders/uv_shader.frag");
-    context.nbVertices    = g_vert.size()/3;
-    context.vertexbuffer  = context.GL_array_buffer( vert_data, 3);
     context.uvbuffer      = context.GL_array_buffer( uv_data, 2);
+    context.colorbuffer   = context.GL_array_buffer( color_data, 2);
   }
+
 
   //Linkage de la matrice
   context.MatrixID      = glGetUniformLocation(context.programID, "MVP"); 
 
-  loadTexture(dib1);
+  //Chargement de la texture
+  if(UV)
+    loadTexture(dib1);
+
   //Boucle principale
   context.loop();
 
@@ -101,10 +139,7 @@ int main(){
   if(UV)
     FreeImage_Unload(dib1);
   glfwDestroyWindow(context.window);
-  //delete[] scalar_data;
-  //delete[] vertex_data;
-  //delete[] normal_data;
-  //delete[] indice_data;
+
   return 1;
 }
 

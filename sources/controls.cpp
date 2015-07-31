@@ -17,16 +17,16 @@
 
 #include "controls.h"
 
+using namespace std;
+
 int    render_mode    = 0;
 int    useColor       = true;
 bool   wireframe      = false;
 GLenum CGL_RENDER     = GL_POINTS;
 int    width          = 1024;
 int    height         = 768;
-bool   UV             = false;
-
-
-using namespace std;
+bool   UV             = true;
+string RENDER         = "";
 
 void mouse_button_callback( GLFWwindow* window,
 			    int button,

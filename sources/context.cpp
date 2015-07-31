@@ -1,3 +1,12 @@
+/**
+ * \file      context.cpp
+ * \author    Norgeot
+ * \brief     Implements the functions corresponding to the OpenGL context.
+ *
+ * \details   This class wraps the OpenGL context and window methods,
+ * allowing the internal mechanics not to be seen for the user.
+ */
+
 #include <stdio.h> 
 #include <stdlib.h>
 #include <iostream>
@@ -20,6 +29,22 @@ int CONTEXT::init( int sizeX,
 		   string windowName,
 		   int major,
 		   int minor){
+  /** 
+   * \brief       Initialise les contextes GLFW et GLEW,
+   *  et créé fenetre et VAO.
+   *
+   * \details     Proceeds to GLFWInit(), then creates the window   
+   * and puts it in the current context.
+   * GLEW is then initialized, before the definition of some basic OpenGL 
+   * properties, as background color... etc
+   * \param   sizeX       window width
+   * \param   sizeY       window height
+   * \param   windowName  window title
+   * \param   major       OPENGL version major
+   * \param   minor       OPENGL version minor
+   * \return  Un \e int representant le statut d'éxécution
+   */
+
   //GLFW Initialization
   glfwWindowHint( GLFW_SAMPLES,               4);
   glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, major);
@@ -71,10 +96,9 @@ GLuint CONTEXT::GL_array_buffer( const float* p_data,
   glBufferData( GL_ARRAY_BUFFER, mem, p_data, GL_STATIC_DRAW);
   return buffer;
 }
-GLuint CONTEXT::GL_index_buffer( const int* indices,
-				 int number){
+GLuint CONTEXT::GL_index_buffer( const int* indices){
   GLuint buffer;
-  int mem = number * sizeof(int);
+  int mem = nbIndices * sizeof(int);
   glGenBuffers( 1,               &buffer); 
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, buffer); 
   glBufferData( GL_ELEMENT_ARRAY_BUFFER, mem, indices, GL_STATIC_DRAW);
@@ -84,11 +108,12 @@ GLuint CONTEXT::GL_index_buffer( const int* indices,
 //Link to shaders
 void CONTEXT::GL_attributes( GLuint buffer,
 			     int index,
+			     int dimension,
 			     string name){
   glEnableVertexAttribArray( index); 
   glBindBuffer(              GL_ARRAY_BUFFER, buffer); 
-  glVertexAttribPointer(     index,           3,     GL_FLOAT,  GL_FALSE, 0, ( void*)0);
-  glBindAttribLocation(      programID,       index, name.c_str());
+  glVertexAttribPointer(     index, dimension, GL_FLOAT, GL_FALSE, 0, ( void*)0);
+  glBindAttribLocation(      programID, index, name.c_str());
 }
 
 void CONTEXT::loop(){
@@ -107,30 +132,25 @@ void CONTEXT::loop(){
     int index = glGetUniformLocation(programID, "renderMode");
     int colorVariable = glGetUniformLocation(programID, "useColor");
     glUniform1f(colorVariable, useColor);
-    if(!UV){
-      //Linkage des attributs
-      GL_attributes(      vertexbuffer, 0, "vertexPosition_modelspace");
-      GL_attributes(      normalbuffer, 2, "normals");
-      //GL_attributes(      colorbuffer , 1, "vertexColor");
-      glEnableVertexAttribArray( 1); 
-      glBindBuffer(GL_ARRAY_BUFFER, colorbuffer); 
-      glVertexAttribPointer(1,1,GL_FLOAT,GL_FALSE, 0, ( void*)0);
-      glBindAttribLocation(programID, 1, "vertexColor");
+
+    //Linkage des attributs
+    GL_attributes(      vertexbuffer, 0, 3, "vertexPosition_modelspace");
+    if(RENDER=="MESH_SOL"){
+      GL_attributes(      colorbuffer , 1, 1, "vertexColor");
+      GL_attributes(      normalbuffer, 2, 3, "normals");
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesbuffer);
     }
-    if(UV){
-      GL_attributes(      vertexbuffer, 0, "vertexPosition_modelspace");
-      glEnableVertexAttribArray( 1); 
-      glBindBuffer(GL_ARRAY_BUFFER, uvbuffer); 
-      glVertexAttribPointer(1, 2, GL_FLOAT,  GL_FALSE, 0, ( void*)0);
-      glBindAttribLocation(programID, 1, "UV");
+    if(RENDER == "PLY_UV")
+      GL_attributes(uvbuffer, 1, 2, "UV");
+    if(RENDER == "PLY_COLORS"){
+      GL_attributes(colorbuffer, 1, 3, "vertexColor");
     }
     
     //Rendu avec faces colorées
     if(render_mode==0){
       wireframe=false;
       glUniform1f(index, 0.0f);
-      if(!UV)      
+      if(RENDER!="PLY_UV")
 	glDrawElements( CGL_RENDER, nbIndices, GL_UNSIGNED_INT, (void*)0);
       else
 	glDrawArrays(CGL_RENDER, 0, nbVertices);
@@ -140,7 +160,7 @@ void CONTEXT::loop(){
       glPolygonMode( GL_FRONT_AND_BACK, GL_LINE);
       glLineWidth(2.0f);
       glUniform1f(index, 1.0f);
-      if(!UV)      
+      if(RENDER!="PLY_UV")
 	glDrawElements( CGL_RENDER, nbIndices, GL_UNSIGNED_INT, (void*)0);
       else
 	glDrawArrays(CGL_RENDER, 0, nbVertices);
@@ -150,14 +170,14 @@ void CONTEXT::loop(){
       wireframe=true;
       glLineWidth(1.0f);
       glUniform1f(index, 2.0f);
-      if(!UV)
+      if(RENDER!="PLY_UV")
 	glDrawElements( CGL_RENDER, nbIndices, GL_UNSIGNED_INT, (void*)0);
       else
 	glDrawArrays(CGL_RENDER, 0, nbVertices);
     }
     //Rendu en nuage de points
     else if (render_mode == 3){
-      if(!UV)
+      if(RENDER!="PLY_UV")
 	glDrawElements( CGL_RENDER, nbIndices, GL_UNSIGNED_INT, (void*)0);
       else
 	glDrawArrays(CGL_RENDER, 0, nbVertices);

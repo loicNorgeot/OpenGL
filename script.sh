@@ -1,8 +1,11 @@
+rm CMakeCache.txt
+rm -r CMakeFiles
+rm Makefile
+rm executables/visu
+
 mkdir -p executables
-mkdir -p build
+#mkdir -p build
 make clean
 cmake -G "Unix Makefiles"
 make
-#make clean
-#make main
 executables/./visu
