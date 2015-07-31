@@ -14,6 +14,6 @@ To compile and execute, simply run ./script.sh in a prompt shell.
 
 #Example
 
-![Example](example.bmp?raw=true "example")
+![Example](example.png?raw=true "example")
 
 
