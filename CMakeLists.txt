@@ -23,7 +23,7 @@ find_library(SIFTGPU_LIBRARY libfreeimage)
 include_directories(${SIFTGPU_INCLUDE_DIR})
 
 #Concatenation pour le linkage de la fin
-set(LIBS ${GLEW_LIBRARY} ${GLFW_STATIC_LIBRARIES} ${X11_LIBRARIES} ${GL_LIBRARY} freeimage)
+set(LIBS ${GLEW_LIBRARY} ${GLFW_STATIC_LIBRARIES} ${X11_LIBRARIES} ${GL_LIBRARY} freeimage) #assimp)
 
 #########################
 #       EXECUTABLE      #
