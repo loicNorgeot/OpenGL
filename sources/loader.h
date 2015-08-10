@@ -4,12 +4,12 @@
 #include <vector>
 #include <string>
 
-/** 
+/**
  * \brief       Class for a .ply or .mesh mesh
  *
  * \details     Contains the informations needed for a mesh rendering.
  */
-class Mesh
+class MESH
 {
  public:
   std::string type;
@@ -19,12 +19,12 @@ class Mesh
   std::vector<int>   indices;
   std::vector<float> uv;
 
-  /** 
+  /**
    * \brief       Default constructor
    */
-  Mesh();
+  MESH();
 
-  /** 
+  /**
    * \brief       Reads .mesh or .ply files, and stores the data
    *
    * \details     Depending on the provided types and files,
@@ -35,22 +35,22 @@ class Mesh
    * \param   textureFile  path to a texture image
    * \return  A mesh instance
    */
-  Mesh(std::string render_type,
+  MESH(std::string render_type,
        std::string meshFile,
        std::string solFile,
        std::string textureFile);
 
-  /** 
+  /**
    * \brief       Overloads the assignement operator
    */
-  Mesh& operator=(const Mesh& otherMesh);
+  MESH& operator=(const MESH& otherMesh);
 };
 
 
 
 
 
-/** 
+/**
  * \brief       Class used for parsing a mesh file
  *
  * \details     Contains a vector container of the different attributes,
@@ -60,35 +60,35 @@ class att
 {
  public:
   std::vector< std::vector<float> > val;
-  int size;   
+  int size;
   float mins[3];
   float maxs[3];
   float gravity_center[3];
   float mv[3];
   float scaleFactor;
 
-  /** 
+  /**
    * \brief       Computes a bounding box from a vector of vertices
    *
    * \return  1 on success
    */
   int get_bounding_box();
 
-  /** 
+  /**
    * \brief       Computes the necessary scaling factor
    *
    * \return  1 on success
    */
   int get_scaling_parameters();
 
-  /** 
+  /**
    * \brief       Translates and scales the vertices positions
    *
    * \return  1 on success
    */
   int move_and_scale();
 
-  /** 
+  /**
    * \brief       Computes the mesh gravity center in 3D
    *
    * \return  1 on success

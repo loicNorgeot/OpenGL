@@ -1,4 +1,4 @@
-/** 
+/**
  * \brief       Class managing the whole application
  *
  * \details     Manages the main application data, parameters and renders.
@@ -11,15 +11,20 @@
 
 #include <string>
 #include "controls.h"
+#include "axis.h"
 
 
 class CONTEXT{
 public:
-  GLFWwindow* window;
+  GLFWwindow *window;
+  AXIS *axis;
+  CONTROLS controls;
 
   GLuint VertexArrayID;
   GLuint programID;
+  GLuint programIDAxes;
   GLuint MatrixID;
+  GLuint MatrixIDAxes;
 
   GLuint vertexbuffer;
   GLuint colorbuffer;
@@ -32,14 +37,15 @@ public:
 
   glm::mat4 MVP;
 
-  CONTROLS controls;
 
-  /** 
+
+
+  /**
    * \brief       Initializes GLFW and GLEW, and creates a window and VAO
    *
-   * \details     Proceeds to GLFWInit(), then creates the window   
+   * \details     Proceeds to GLFWInit(), then creates the window
    * and puts it in the current context.
-   * GLEW is then initialized, before the definition of some basic OpenGL 
+   * GLEW is then initialized, before the definition of some basic OpenGL
    * properties, as clear color, multisampling... etc
    * \param   sizeX       window width
    * \param   sizeY       window height
@@ -51,10 +57,10 @@ public:
   int init(int sizeX, int sizeY, std::string windowName, int major, int minor);
 
 
-  /** 
+  /**
    * \brief    Fills a buffer
    *
-   * \details  Loads data from a dynamic array and binds it to a buffer 
+   * \details  Loads data from a dynamic array and binds it to a buffer
    * to be later sent to the GLSL shader program
    * \param    p_data      data to buffer
    * \param    dimension   dimension of the data (3 for 3D vertex, 1 for scalar...)
@@ -62,7 +68,7 @@ public:
    */
   GLuint GL_array_buffer(const float* p_data, int dimension);
 
-  /** 
+  /**
    * \brief    Opens an indices buffer
    *
    * \details  Loads indices data from an integer array,
@@ -72,7 +78,7 @@ public:
    */
   GLuint GL_index_buffer( const int* indices);
 
-  /** 
+  /**
    * \brief    Links a buffer with a shader attribute
    *
    * \details  Links data from a buffer to a corresponding attribute
@@ -85,7 +91,7 @@ public:
    */
   void GL_attributes(GLuint buffer, int index, int dimension, std::string name);
 
-  /** 
+  /**
    * \brief    Executes the main loop
    *
    * \details  Executed at each call, this function loads the main parameters,

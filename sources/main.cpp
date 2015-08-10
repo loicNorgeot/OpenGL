@@ -11,6 +11,7 @@
 #include "context.h"
 #include "loader.h"
 #include "texture.h"
+#include "axis.h"
 
 //#include "assimpMesh.h"
 
@@ -20,7 +21,8 @@ int main(){
   SHADER   shader;
   CONTEXT  context;
   TEXTURE  texture;
-  Mesh     mesh;
+  MESH     mesh;
+
 
   //Render type
   RENDER = "MESH_SOL";
@@ -29,14 +31,13 @@ int main(){
   string assetPath = "/home/loic/OPENGL/assets/";
   string shaderPath = "/home/loic/OPENGL/shaders/";
   string meshFile  = assetPath + "FauduetBone.o1.mesh";
+  //string meshFile  = "/home/loic/dev/glic/3257-3258.d.mesh";
   string solFile   = assetPath + "toto.sol";
   string plyFile   = assetPath + "c_nardoni.ply";
   //string plyFileT  = assetPath + "3260.ply";
   string plyFileT  = "/home/loic/Ply/F_3354.ply";
   string imgFile   = assetPath + "c_nardoni_2048.jpg";
   FIBITMAP *dib1   = NULL;
-
-  cout << "toto" << endl;
 
   //Parameters according to the render type
   if((RENDER=="MESH_SOL") || (RENDER=="MESH") || (RENDER=="PLY_COLORS"))
@@ -45,19 +46,19 @@ int main(){
     UV = true;
 
   if(RENDER=="MESH_SOL"){
-    Mesh M(RENDER, meshFile, solFile, "");
+    MESH M(RENDER, meshFile, solFile, "");
     mesh = M;
   }
   else if(RENDER=="MESH"){
-    Mesh M(RENDER, meshFile, "", "");
+    MESH M(RENDER, meshFile, "", "");
     mesh = M;
   }
   else if(RENDER=="PLY_UV"){
-    Mesh M(RENDER, plyFile, "", imgFile);
+    MESH M(RENDER, plyFile, "", imgFile);
     mesh = M;
   }
   else if(RENDER=="PLY_COLORS"){
-    Mesh M(RENDER, plyFileT, "", "");
+    MESH M(RENDER, plyFileT, "", "");
     mesh = M;
   }
 
@@ -110,15 +111,31 @@ int main(){
     shader.load(shaderPath + "uv_shader.vert", shaderPath + "uv_shader.frag");
   }
 
-  context.programID = shader.mProgramID;
+  SHADER shaderAxes;
+  shaderAxes.load(shaderPath + "simple_shader.vert", shaderPath + "simple_shader.frag");
+
+  //Shader link
+  context.programIDAxes = shaderAxes.mProgramID;
+
+  context.programID     = shader.mProgramID;
   //Matrix link
-  context.MatrixID      = glGetUniformLocation(context.programID, "MVP");
+  context.MatrixID      = glGetUniformLocation(context.programID,     "MVP");
+  context.MatrixIDAxes  = glGetUniformLocation(context.programIDAxes, "MVP1");
+
+  cout << "mID      = " << context.MatrixID     << endl;
+  cout << "mID axes = " << context.MatrixIDAxes << endl;
+  cout << "pID      = " << context.programID     << endl;
+  cout << "pID axes = " << context.programIDAxes << endl;
+
 
   //Texture loading
   if(UV)
     texture.loadTexture();
 
   //Main loop
+  AXIS axis;
+  context.axis = &axis;
+
   context.loop();
 
   //Freeing ressources

@@ -21,7 +21,7 @@ static int    sizes[]   = {0,          0,           0,         0};
 static int   lineNumber = 0;
 static bool  firstFloat = true;
 
-Mesh& Mesh::operator=(const Mesh& otherMesh){
+MESH& MESH::operator=(const MESH& otherMesh){
   type    = otherMesh.type;
   verts   = otherMesh.verts;
   colors  = otherMesh.colors;
@@ -31,12 +31,12 @@ Mesh& Mesh::operator=(const Mesh& otherMesh){
   return *this;
 }
 
-Mesh::Mesh(){
+MESH::MESH(){
   type    = "";
   verts   = {};
 }
 
-Mesh::Mesh(string render_type,
+MESH::MESH(string render_type,
 	   string meshFile,
 	   string solFile,
 	   string textureFile){
@@ -84,7 +84,7 @@ Mesh::Mesh(string render_type,
   //Opening file
   ifstream fin;
   fin.open( meshFile.c_str());
-  if ( !fin.good()) 
+  if ( !fin.good())
     cout << "File not opened !!!" << endl;
 
 
@@ -170,7 +170,7 @@ Mesh::Mesh(string render_type,
 	  //cout << "0_" << i << endl;
 	}
       }
-    
+
       //Extract sizes
       for (int i = 0 ; i < numProp ; i++){
 	if(readNum[i]){
@@ -206,12 +206,12 @@ Mesh::Mesh(string render_type,
   attributes[0].get_gravity_center();
   attributes[0].get_scaling_parameters();
   attributes[0].move_and_scale();
-  
+
 
 
   ////////////////////////////////////////////////////////////////////////////
   //EXPORTING the values
-  
+
   ///////////////////////////////////////////
   //PLY with UV coordinates, not indexed
   if(render_type == "PLY_UV"){
@@ -328,7 +328,7 @@ int att::get_scaling_parameters(){
   //Translation parameters
   for(int j = 0 ; j < 3 ; j++){
     mv[j] = - gravity_center[j];
-  }  
+  }
   return 1;
 }
 

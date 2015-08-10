@@ -1,4 +1,4 @@
-#include <stdio.h> 
+#include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
 #include <string>
@@ -7,7 +7,7 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <GL/gl.h> 
+#include <GL/gl.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -45,19 +45,19 @@ void CONTROLS::set_view( GLFWwindow* window){
     //Cam position modification
     if(rotating){
       if(enterRotating){
-	centerX = xpos; 
+	centerX = xpos;
 	centerY = ypos;
 	enterRotating=false;
       }
-      
+
       float sensibility = 15.0f;
       //Vertical axis rotation
-      glm::quat quaternionY = glm::angleAxis(float(sensibility * deltaTime * (centerX - xpos)), 
+      glm::quat quaternionY = glm::angleAxis(float(sensibility * deltaTime * (centerX - xpos)),
 					     glm::vec3(0.0f, 1.0f, 0.0f));
       //"Right axis rotation"
-      glm::quat quaternionX = glm::angleAxis(float(sensibility * deltaTime * (centerY - ypos)), 
+      glm::quat quaternionX = glm::angleAxis(float(sensibility * deltaTime * (centerY - ypos)),
 					     glm::cross(-cam, glm::vec3(0.0f, 1.0f, 0.0f)));
-      centerX = xpos; 
+      centerX = xpos;
       centerY = ypos;
 
       //Quaternion application
@@ -67,7 +67,7 @@ void CONTROLS::set_view( GLFWwindow* window){
     }
 
     //Camera direction update
-    look = -cam;  
+    look = -cam;
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////:
@@ -77,7 +77,7 @@ void CONTROLS::set_view( GLFWwindow* window){
     //Global parameters
     glfwSetInputMode( window, GLFW_CURSOR,      GLFW_CURSOR_DISABLED);
     glfwSetInputMode( window, GLFW_STICKY_KEYS, GL_FALSE);
-    
+
     //Cursor data
     double xpos=0, ypos=0;
     glfwGetCursorPos( window, &xpos, &ypos);
@@ -88,7 +88,7 @@ void CONTROLS::set_view( GLFWwindow* window){
       centerY      = ypos;
       ENTERFLYMODE = false;
     }
-    
+
     //Flying mode tweaking
     glm::quat horizontalQuat = glm::angleAxis(mouseSpeed * 1.0f * float(centerX - xpos),
 					   glm::vec3(0.0f, 1.0f, 0.0f));
@@ -106,13 +106,13 @@ void CONTROLS::set_view( GLFWwindow* window){
     //Camera movements
     float D = deltaTime * speed;
     if ( glfwGetKey( window,  GLFW_KEY_UP )   == GLFW_PRESS)
-      cam += look * D;  
+      cam += look * D;
     if ( glfwGetKey( window,  GLFW_KEY_DOWN)  == GLFW_PRESS)
-      cam -= look * D; 
+      cam -= look * D;
     if ( glfwGetKey( window,  GLFW_KEY_RIGHT) == GLFW_PRESS)
-      cam += right     * D; 
+      cam += right     * D;
     if ( glfwGetKey( window,  GLFW_KEY_LEFT)  == GLFW_PRESS)
-      cam -= right     * D; 
+      cam -= right     * D;
   }
 }
 
@@ -140,14 +140,9 @@ void CONTROLS::set_render_type(GLFWwindow* window){
 
 
 glm::mat4 CONTROLS::update_MVP(){
-  glm::mat4 Projection = glm::perspective( FOV,
-					   4.0f / 3.0f,
-					   0.1f,
-					   100.0f); 
-  glm::mat4 View       = glm::lookAt(      cam,
-					   look,
-					   up);
-  glm::mat4 Model      = glm::mat4(        1.0f);
+  glm::mat4 Projection = glm::perspective( FOV, 4.0f / 3.0f, 1.f, 10.0f);
+  glm::mat4 View       = glm::lookAt(cam, look, up);
+  glm::mat4 Model      = glm::mat4(1.0f);//glm::translate(glm::mat4(1.0f), glm::vec3(0.2, 0, 0));//glm::mat4(        1.0f);
   glm::mat4 MVP        = Projection * View * Model;
   return MVP;
 }
@@ -155,7 +150,7 @@ glm::mat4 CONTROLS::update_MVP(){
 void CONTROLS::listen( GLFWwindow* window){
   //Time computation
   static double lastTime    = glfwGetTime();
-  double        currentTime = glfwGetTime(); 
+  double        currentTime = glfwGetTime();
   deltaTime                 = float( currentTime - lastTime);
   //Main actions
   set_view(        window);
@@ -208,7 +203,7 @@ void scroll_callback( GLFWwindow* window,
   //Zoom in static mode
   if( !FLYINGMODE){
     float D = 0.05f;
-    cam -= cam * D * float(y);  
+    cam -= cam * D * float(y);
   }
   //Vertical movement in FLYING MODE
   if(FLYINGMODE){
@@ -222,13 +217,13 @@ void key_callback( GLFWwindow* window,
 		   int scancode,
 		   int action,
 		   int mods){
-  
+
   //C to toogle color
   if ( key == GLFW_KEY_C && action == GLFW_PRESS){
       useColor=!useColor;
     cout << "Use color: " << useColor << endl;
   }
-  
+
   //Z for wireframe
   if ( scancode == 25 && action == GLFW_PRESS){
     render_mode++;
